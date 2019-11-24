@@ -127,3 +127,5 @@ dmypy.json
 
 grpc/
 .idea/
+/examples/
+/GoLang - Leaderboard Task.pdf
