@@ -19,143 +19,29 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='leaderboard.proto',
   package='leaderboard',
   syntax='proto3',
-  serialized_options=_b('\242\002\003LBS'),
-  serialized_pb=_b('\n\x11leaderboard.proto\x12\x0bleaderboard\",\n\x05Point\x12\x10\n\x08latitude\x18\x01 \x01(\x05\x12\x11\n\tlongitude\x18\x02 \x01(\x05\"K\n\tRectangle\x12\x1e\n\x02lo\x18\x01 \x01(\x0b\x32\x12.leaderboard.Point\x12\x1e\n\x02hi\x18\x02 \x01(\x0b\x32\x12.leaderboard.Point\"=\n\x07\x46\x65\x61ture\x12\x0c\n\x04name\x18\x01 \x01(\t\x12$\n\x08location\x18\x02 \x01(\x0b\x32\x12.leaderboard.Point\"B\n\tRouteNote\x12$\n\x08location\x18\x01 \x01(\x0b\x32\x12.leaderboard.Point\x12\x0f\n\x07message\x18\x02 \x01(\t\"b\n\x0cRouteSummary\x12\x13\n\x0bpoint_count\x18\x01 \x01(\x05\x12\x15\n\rfeature_count\x18\x02 \x01(\x05\x12\x10\n\x08\x64istance\x18\x03 \x01(\x05\x12\x14\n\x0c\x65lapsed_time\x18\x04 \x01(\x05\x32\x8d\x02\n\nRouteGuide\x12\x38\n\nGetFeature\x12\x12.leaderboard.Point\x1a\x14.leaderboard.Feature\"\x00\x12@\n\x0cListFeatures\x12\x16.leaderboard.Rectangle\x1a\x14.leaderboard.Feature\"\x00\x30\x01\x12@\n\x0bRecordRoute\x12\x12.leaderboard.Point\x1a\x19.leaderboard.RouteSummary\"\x00(\x01\x12\x41\n\tRouteChat\x12\x16.leaderboard.RouteNote\x1a\x16.leaderboard.RouteNote\"\x00(\x01\x30\x01\x42\x06\xa2\x02\x03LBSb\x06proto3')
+  serialized_options=_b('\242\002\002LB'),
+  serialized_pb=_b('\n\x11leaderboard.proto\x12\x0bleaderboard\"0\n\rLoginPassword\x12\r\n\x05login\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"\x1b\n\x05Token\x12\x12\n\nauth_token\x18\x01 \x01(\t\"M\n\x0bPlayerScore\x12!\n\x05token\x18\x01 \x01(\x0b\x32\x12.leaderboard.Token\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05score\x18\x03 \x01(\x03\"\x1d\n\rScoreResponse\x12\x0c\n\x04rank\x18\x01 \x01(\x03\"O\n\x0eGetLeaderBoard\x12!\n\x05token\x18\x01 \x01(\x0b\x32\x12.leaderboard.Token\x12\x0c\n\x04page\x18\x02 \x01(\x05\x12\x0c\n\x04name\x18\x03 \x01(\t\">\n\x11LeaderBoardRecord\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\x03\x12\x0c\n\x04rank\x18\x03 \x01(\x05\"\x8c\x01\n\x13LeaderBoardResponse\x12/\n\x07results\x18\x01 \x03(\x0b\x32\x1e.leaderboard.LeaderBoardRecord\x12\x31\n\taround_me\x18\x02 \x03(\x0b\x32\x1e.leaderboard.LeaderBoardRecord\x12\x11\n\tnext_page\x18\x03 \x01(\x05\x32\xee\x01\n\x0bLeaderBoard\x12\x44\n\x10\x41uthenticateUser\x12\x1a.leaderboard.LoginPassword\x1a\x12.leaderboard.Token\"\x00\x12K\n\x11RecordPlayerScore\x12\x18.leaderboard.PlayerScore\x1a\x1a.leaderboard.ScoreResponse\"\x00\x12L\n\tRouteChat\x12\x1b.leaderboard.GetLeaderBoard\x1a .leaderboard.LeaderBoardResponse\"\x00\x42\x05\xa2\x02\x02LBb\x06proto3')
 )
 
 
 
 
-_POINT = _descriptor.Descriptor(
-  name='Point',
-  full_name='leaderboard.Point',
+_LOGINPASSWORD = _descriptor.Descriptor(
+  name='LoginPassword',
+  full_name='leaderboard.LoginPassword',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='latitude', full_name='leaderboard.Point.latitude', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='longitude', full_name='leaderboard.Point.longitude', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=34,
-  serialized_end=78,
-)
-
-
-_RECTANGLE = _descriptor.Descriptor(
-  name='Rectangle',
-  full_name='leaderboard.Rectangle',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='lo', full_name='leaderboard.Rectangle.lo', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='hi', full_name='leaderboard.Rectangle.hi', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=80,
-  serialized_end=155,
-)
-
-
-_FEATURE = _descriptor.Descriptor(
-  name='Feature',
-  full_name='leaderboard.Feature',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='name', full_name='leaderboard.Feature.name', index=0,
+      name='login', full_name='leaderboard.LoginPassword.login', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='location', full_name='leaderboard.Feature.location', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=157,
-  serialized_end=218,
-)
-
-
-_ROUTENOTE = _descriptor.Descriptor(
-  name='RouteNote',
-  full_name='leaderboard.RouteNote',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='location', full_name='leaderboard.RouteNote.location', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='message', full_name='leaderboard.RouteNote.message', index=1,
+      name='password', full_name='leaderboard.LoginPassword.password', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -173,42 +59,66 @@ _ROUTENOTE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=220,
-  serialized_end=286,
+  serialized_start=34,
+  serialized_end=82,
 )
 
 
-_ROUTESUMMARY = _descriptor.Descriptor(
-  name='RouteSummary',
-  full_name='leaderboard.RouteSummary',
+_TOKEN = _descriptor.Descriptor(
+  name='Token',
+  full_name='leaderboard.Token',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='point_count', full_name='leaderboard.RouteSummary.point_count', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
+      name='auth_token', full_name='leaderboard.Token.auth_token', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=84,
+  serialized_end=111,
+)
+
+
+_PLAYERSCORE = _descriptor.Descriptor(
+  name='PlayerScore',
+  full_name='leaderboard.PlayerScore',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='token', full_name='leaderboard.PlayerScore.token', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='feature_count', full_name='leaderboard.RouteSummary.feature_count', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
+      name='name', full_name='leaderboard.PlayerScore.name', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='distance', full_name='leaderboard.RouteSummary.distance', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='elapsed_time', full_name='leaderboard.RouteSummary.elapsed_time', index=3,
-      number=4, type=5, cpp_type=1, label=1,
+      name='score', full_name='leaderboard.PlayerScore.score', index=2,
+      number=3, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -225,107 +135,280 @@ _ROUTESUMMARY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=288,
-  serialized_end=386,
+  serialized_start=113,
+  serialized_end=190,
 )
 
-_RECTANGLE.fields_by_name['lo'].message_type = _POINT
-_RECTANGLE.fields_by_name['hi'].message_type = _POINT
-_FEATURE.fields_by_name['location'].message_type = _POINT
-_ROUTENOTE.fields_by_name['location'].message_type = _POINT
-DESCRIPTOR.message_types_by_name['Point'] = _POINT
-DESCRIPTOR.message_types_by_name['Rectangle'] = _RECTANGLE
-DESCRIPTOR.message_types_by_name['Feature'] = _FEATURE
-DESCRIPTOR.message_types_by_name['RouteNote'] = _ROUTENOTE
-DESCRIPTOR.message_types_by_name['RouteSummary'] = _ROUTESUMMARY
+
+_SCORERESPONSE = _descriptor.Descriptor(
+  name='ScoreResponse',
+  full_name='leaderboard.ScoreResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='rank', full_name='leaderboard.ScoreResponse.rank', index=0,
+      number=1, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=192,
+  serialized_end=221,
+)
+
+
+_GETLEADERBOARD = _descriptor.Descriptor(
+  name='GetLeaderBoard',
+  full_name='leaderboard.GetLeaderBoard',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='token', full_name='leaderboard.GetLeaderBoard.token', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='page', full_name='leaderboard.GetLeaderBoard.page', index=1,
+      number=2, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='name', full_name='leaderboard.GetLeaderBoard.name', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=223,
+  serialized_end=302,
+)
+
+
+_LEADERBOARDRECORD = _descriptor.Descriptor(
+  name='LeaderBoardRecord',
+  full_name='leaderboard.LeaderBoardRecord',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='leaderboard.LeaderBoardRecord.name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='score', full_name='leaderboard.LeaderBoardRecord.score', index=1,
+      number=2, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='rank', full_name='leaderboard.LeaderBoardRecord.rank', index=2,
+      number=3, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=304,
+  serialized_end=366,
+)
+
+
+_LEADERBOARDRESPONSE = _descriptor.Descriptor(
+  name='LeaderBoardResponse',
+  full_name='leaderboard.LeaderBoardResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='results', full_name='leaderboard.LeaderBoardResponse.results', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='around_me', full_name='leaderboard.LeaderBoardResponse.around_me', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='next_page', full_name='leaderboard.LeaderBoardResponse.next_page', index=2,
+      number=3, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=369,
+  serialized_end=509,
+)
+
+_PLAYERSCORE.fields_by_name['token'].message_type = _TOKEN
+_GETLEADERBOARD.fields_by_name['token'].message_type = _TOKEN
+_LEADERBOARDRESPONSE.fields_by_name['results'].message_type = _LEADERBOARDRECORD
+_LEADERBOARDRESPONSE.fields_by_name['around_me'].message_type = _LEADERBOARDRECORD
+DESCRIPTOR.message_types_by_name['LoginPassword'] = _LOGINPASSWORD
+DESCRIPTOR.message_types_by_name['Token'] = _TOKEN
+DESCRIPTOR.message_types_by_name['PlayerScore'] = _PLAYERSCORE
+DESCRIPTOR.message_types_by_name['ScoreResponse'] = _SCORERESPONSE
+DESCRIPTOR.message_types_by_name['GetLeaderBoard'] = _GETLEADERBOARD
+DESCRIPTOR.message_types_by_name['LeaderBoardRecord'] = _LEADERBOARDRECORD
+DESCRIPTOR.message_types_by_name['LeaderBoardResponse'] = _LEADERBOARDRESPONSE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-Point = _reflection.GeneratedProtocolMessageType('Point', (_message.Message,), {
-  'DESCRIPTOR' : _POINT,
+LoginPassword = _reflection.GeneratedProtocolMessageType('LoginPassword', (_message.Message,), {
+  'DESCRIPTOR' : _LOGINPASSWORD,
   '__module__' : 'leaderboard_pb2'
-  # @@protoc_insertion_point(class_scope:leaderboard.Point)
+  # @@protoc_insertion_point(class_scope:leaderboard.LoginPassword)
   })
-_sym_db.RegisterMessage(Point)
+_sym_db.RegisterMessage(LoginPassword)
 
-Rectangle = _reflection.GeneratedProtocolMessageType('Rectangle', (_message.Message,), {
-  'DESCRIPTOR' : _RECTANGLE,
+Token = _reflection.GeneratedProtocolMessageType('Token', (_message.Message,), {
+  'DESCRIPTOR' : _TOKEN,
   '__module__' : 'leaderboard_pb2'
-  # @@protoc_insertion_point(class_scope:leaderboard.Rectangle)
+  # @@protoc_insertion_point(class_scope:leaderboard.Token)
   })
-_sym_db.RegisterMessage(Rectangle)
+_sym_db.RegisterMessage(Token)
 
-Feature = _reflection.GeneratedProtocolMessageType('Feature', (_message.Message,), {
-  'DESCRIPTOR' : _FEATURE,
+PlayerScore = _reflection.GeneratedProtocolMessageType('PlayerScore', (_message.Message,), {
+  'DESCRIPTOR' : _PLAYERSCORE,
   '__module__' : 'leaderboard_pb2'
-  # @@protoc_insertion_point(class_scope:leaderboard.Feature)
+  # @@protoc_insertion_point(class_scope:leaderboard.PlayerScore)
   })
-_sym_db.RegisterMessage(Feature)
+_sym_db.RegisterMessage(PlayerScore)
 
-RouteNote = _reflection.GeneratedProtocolMessageType('RouteNote', (_message.Message,), {
-  'DESCRIPTOR' : _ROUTENOTE,
+ScoreResponse = _reflection.GeneratedProtocolMessageType('ScoreResponse', (_message.Message,), {
+  'DESCRIPTOR' : _SCORERESPONSE,
   '__module__' : 'leaderboard_pb2'
-  # @@protoc_insertion_point(class_scope:leaderboard.RouteNote)
+  # @@protoc_insertion_point(class_scope:leaderboard.ScoreResponse)
   })
-_sym_db.RegisterMessage(RouteNote)
+_sym_db.RegisterMessage(ScoreResponse)
 
-RouteSummary = _reflection.GeneratedProtocolMessageType('RouteSummary', (_message.Message,), {
-  'DESCRIPTOR' : _ROUTESUMMARY,
+GetLeaderBoard = _reflection.GeneratedProtocolMessageType('GetLeaderBoard', (_message.Message,), {
+  'DESCRIPTOR' : _GETLEADERBOARD,
   '__module__' : 'leaderboard_pb2'
-  # @@protoc_insertion_point(class_scope:leaderboard.RouteSummary)
+  # @@protoc_insertion_point(class_scope:leaderboard.GetLeaderBoard)
   })
-_sym_db.RegisterMessage(RouteSummary)
+_sym_db.RegisterMessage(GetLeaderBoard)
+
+LeaderBoardRecord = _reflection.GeneratedProtocolMessageType('LeaderBoardRecord', (_message.Message,), {
+  'DESCRIPTOR' : _LEADERBOARDRECORD,
+  '__module__' : 'leaderboard_pb2'
+  # @@protoc_insertion_point(class_scope:leaderboard.LeaderBoardRecord)
+  })
+_sym_db.RegisterMessage(LeaderBoardRecord)
+
+LeaderBoardResponse = _reflection.GeneratedProtocolMessageType('LeaderBoardResponse', (_message.Message,), {
+  'DESCRIPTOR' : _LEADERBOARDRESPONSE,
+  '__module__' : 'leaderboard_pb2'
+  # @@protoc_insertion_point(class_scope:leaderboard.LeaderBoardResponse)
+  })
+_sym_db.RegisterMessage(LeaderBoardResponse)
 
 
 DESCRIPTOR._options = None
 
-_ROUTEGUIDE = _descriptor.ServiceDescriptor(
-  name='RouteGuide',
-  full_name='leaderboard.RouteGuide',
+_LEADERBOARD = _descriptor.ServiceDescriptor(
+  name='LeaderBoard',
+  full_name='leaderboard.LeaderBoard',
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=389,
-  serialized_end=658,
+  serialized_start=512,
+  serialized_end=750,
   methods=[
   _descriptor.MethodDescriptor(
-    name='GetFeature',
-    full_name='leaderboard.RouteGuide.GetFeature',
+    name='AuthenticateUser',
+    full_name='leaderboard.LeaderBoard.AuthenticateUser',
     index=0,
     containing_service=None,
-    input_type=_POINT,
-    output_type=_FEATURE,
+    input_type=_LOGINPASSWORD,
+    output_type=_TOKEN,
     serialized_options=None,
   ),
   _descriptor.MethodDescriptor(
-    name='ListFeatures',
-    full_name='leaderboard.RouteGuide.ListFeatures',
+    name='RecordPlayerScore',
+    full_name='leaderboard.LeaderBoard.RecordPlayerScore',
     index=1,
     containing_service=None,
-    input_type=_RECTANGLE,
-    output_type=_FEATURE,
-    serialized_options=None,
-  ),
-  _descriptor.MethodDescriptor(
-    name='RecordRoute',
-    full_name='leaderboard.RouteGuide.RecordRoute',
-    index=2,
-    containing_service=None,
-    input_type=_POINT,
-    output_type=_ROUTESUMMARY,
+    input_type=_PLAYERSCORE,
+    output_type=_SCORERESPONSE,
     serialized_options=None,
   ),
   _descriptor.MethodDescriptor(
     name='RouteChat',
-    full_name='leaderboard.RouteGuide.RouteChat',
-    index=3,
+    full_name='leaderboard.LeaderBoard.RouteChat',
+    index=2,
     containing_service=None,
-    input_type=_ROUTENOTE,
-    output_type=_ROUTENOTE,
+    input_type=_GETLEADERBOARD,
+    output_type=_LEADERBOARDRESPONSE,
     serialized_options=None,
   ),
 ])
-_sym_db.RegisterServiceDescriptor(_ROUTEGUIDE)
+_sym_db.RegisterServiceDescriptor(_LEADERBOARD)
 
-DESCRIPTOR.services_by_name['RouteGuide'] = _ROUTEGUIDE
+DESCRIPTOR.services_by_name['LeaderBoard'] = _LEADERBOARD
 
 # @@protoc_insertion_point(module_scope)
