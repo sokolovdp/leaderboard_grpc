@@ -17,16 +17,16 @@ class LeaderBoardStub(object):
     self.AuthenticateUser = channel.unary_unary(
         '/leaderboard.LeaderBoard/AuthenticateUser',
         request_serializer=leaderboard__pb2.LoginPassword.SerializeToString,
-        response_deserializer=leaderboard__pb2.Token.FromString,
+        response_deserializer=leaderboard__pb2.TokenAuth.FromString,
         )
     self.RecordPlayerScore = channel.stream_stream(
         '/leaderboard.LeaderBoard/RecordPlayerScore',
         request_serializer=leaderboard__pb2.PlayerScore.SerializeToString,
         response_deserializer=leaderboard__pb2.ScoreResponse.FromString,
         )
-    self.RouteChat = channel.unary_unary(
-        '/leaderboard.LeaderBoard/RouteChat',
-        request_serializer=leaderboard__pb2.GetLeaderBoard.SerializeToString,
+    self.GetLeaderBoard = channel.unary_unary(
+        '/leaderboard.LeaderBoard/GetLeaderBoard',
+        request_serializer=leaderboard__pb2.GetLB.SerializeToString,
         response_deserializer=leaderboard__pb2.LeaderBoardResponse.FromString,
         )
 
@@ -49,7 +49,7 @@ class LeaderBoardServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
-  def RouteChat(self, request, context):
+  def GetLeaderBoard(self, request, context):
     # missing associated documentation comment in .proto file
     pass
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -62,16 +62,16 @@ def add_LeaderBoardServicer_to_server(servicer, server):
       'AuthenticateUser': grpc.unary_unary_rpc_method_handler(
           servicer.AuthenticateUser,
           request_deserializer=leaderboard__pb2.LoginPassword.FromString,
-          response_serializer=leaderboard__pb2.Token.SerializeToString,
+          response_serializer=leaderboard__pb2.TokenAuth.SerializeToString,
       ),
       'RecordPlayerScore': grpc.stream_stream_rpc_method_handler(
           servicer.RecordPlayerScore,
           request_deserializer=leaderboard__pb2.PlayerScore.FromString,
           response_serializer=leaderboard__pb2.ScoreResponse.SerializeToString,
       ),
-      'RouteChat': grpc.unary_unary_rpc_method_handler(
-          servicer.RouteChat,
-          request_deserializer=leaderboard__pb2.GetLeaderBoard.FromString,
+      'GetLeaderBoard': grpc.unary_unary_rpc_method_handler(
+          servicer.GetLeaderBoard,
+          request_deserializer=leaderboard__pb2.GetLB.FromString,
           response_serializer=leaderboard__pb2.LeaderBoardResponse.SerializeToString,
       ),
   }

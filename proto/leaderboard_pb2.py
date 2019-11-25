@@ -19,8 +19,8 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='leaderboard.proto',
   package='leaderboard',
   syntax='proto3',
-  serialized_options=_b('\242\002\002LB'),
-  serialized_pb=_b('\n\x11leaderboard.proto\x12\x0bleaderboard\"0\n\rLoginPassword\x12\r\n\x05login\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"\x1b\n\x05Token\x12\x12\n\nauth_token\x18\x01 \x01(\t\"M\n\x0bPlayerScore\x12!\n\x05token\x18\x01 \x01(\x0b\x32\x12.leaderboard.Token\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05score\x18\x03 \x01(\x03\"\x1d\n\rScoreResponse\x12\x0c\n\x04rank\x18\x01 \x01(\x03\"O\n\x0eGetLeaderBoard\x12!\n\x05token\x18\x01 \x01(\x0b\x32\x12.leaderboard.Token\x12\x0c\n\x04page\x18\x02 \x01(\x05\x12\x0c\n\x04name\x18\x03 \x01(\t\">\n\x11LeaderBoardRecord\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\x03\x12\x0c\n\x04rank\x18\x03 \x01(\x05\"\x8c\x01\n\x13LeaderBoardResponse\x12/\n\x07results\x18\x01 \x03(\x0b\x32\x1e.leaderboard.LeaderBoardRecord\x12\x31\n\taround_me\x18\x02 \x03(\x0b\x32\x1e.leaderboard.LeaderBoardRecord\x12\x11\n\tnext_page\x18\x03 \x01(\x05\x32\xf2\x01\n\x0bLeaderBoard\x12\x44\n\x10\x41uthenticateUser\x12\x1a.leaderboard.LoginPassword\x1a\x12.leaderboard.Token\"\x00\x12O\n\x11RecordPlayerScore\x12\x18.leaderboard.PlayerScore\x1a\x1a.leaderboard.ScoreResponse\"\x00(\x01\x30\x01\x12L\n\tRouteChat\x12\x1b.leaderboard.GetLeaderBoard\x1a .leaderboard.LeaderBoardResponse\"\x00\x42\x05\xa2\x02\x02LBb\x06proto3')
+  serialized_options=None,
+  serialized_pb=_b('\n\x11leaderboard.proto\x12\x0bleaderboard\"0\n\rLoginPassword\x12\r\n\x05login\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"\x1a\n\tTokenAuth\x12\r\n\x05token\x18\x01 \x01(\t\"*\n\x0bPlayerScore\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\x03\"\x1d\n\rScoreResponse\x12\x0c\n\x04rank\x18\x01 \x01(\x03\"#\n\x05GetLB\x12\x0c\n\x04page\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\">\n\x11LeaderBoardRecord\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\x03\x12\x0c\n\x04rank\x18\x03 \x01(\x05\"\x8c\x01\n\x13LeaderBoardResponse\x12/\n\x07results\x18\x01 \x03(\x0b\x32\x1e.leaderboard.LeaderBoardRecord\x12\x31\n\taround_me\x18\x02 \x03(\x0b\x32\x1e.leaderboard.LeaderBoardRecord\x12\x11\n\tnext_page\x18\x03 \x01(\x05\x32\xf2\x01\n\x0bLeaderBoard\x12H\n\x10\x41uthenticateUser\x12\x1a.leaderboard.LoginPassword\x1a\x16.leaderboard.TokenAuth\"\x00\x12O\n\x11RecordPlayerScore\x12\x18.leaderboard.PlayerScore\x1a\x1a.leaderboard.ScoreResponse\"\x00(\x01\x30\x01\x12H\n\x0eGetLeaderBoard\x12\x12.leaderboard.GetLB\x1a .leaderboard.LeaderBoardResponse\"\x00\x62\x06proto3')
 )
 
 
@@ -64,15 +64,15 @@ _LOGINPASSWORD = _descriptor.Descriptor(
 )
 
 
-_TOKEN = _descriptor.Descriptor(
-  name='Token',
-  full_name='leaderboard.Token',
+_TOKENAUTH = _descriptor.Descriptor(
+  name='TokenAuth',
+  full_name='leaderboard.TokenAuth',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='auth_token', full_name='leaderboard.Token.auth_token', index=0,
+      name='token', full_name='leaderboard.TokenAuth.token', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -91,7 +91,7 @@ _TOKEN = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=84,
-  serialized_end=111,
+  serialized_end=110,
 )
 
 
@@ -103,22 +103,15 @@ _PLAYERSCORE = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='token', full_name='leaderboard.PlayerScore.token', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='name', full_name='leaderboard.PlayerScore.name', index=1,
-      number=2, type=9, cpp_type=9, label=1,
+      name='name', full_name='leaderboard.PlayerScore.name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='score', full_name='leaderboard.PlayerScore.score', index=2,
-      number=3, type=3, cpp_type=2, label=1,
+      name='score', full_name='leaderboard.PlayerScore.score', index=1,
+      number=2, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -135,8 +128,8 @@ _PLAYERSCORE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=113,
-  serialized_end=190,
+  serialized_start=112,
+  serialized_end=154,
 )
 
 
@@ -166,35 +159,28 @@ _SCORERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=192,
-  serialized_end=221,
+  serialized_start=156,
+  serialized_end=185,
 )
 
 
-_GETLEADERBOARD = _descriptor.Descriptor(
-  name='GetLeaderBoard',
-  full_name='leaderboard.GetLeaderBoard',
+_GETLB = _descriptor.Descriptor(
+  name='GetLB',
+  full_name='leaderboard.GetLB',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='token', full_name='leaderboard.GetLeaderBoard.token', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='page', full_name='leaderboard.GetLeaderBoard.page', index=1,
-      number=2, type=5, cpp_type=1, label=1,
+      name='page', full_name='leaderboard.GetLB.page', index=0,
+      number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='name', full_name='leaderboard.GetLeaderBoard.name', index=2,
-      number=3, type=9, cpp_type=9, label=1,
+      name='name', full_name='leaderboard.GetLB.name', index=1,
+      number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -211,8 +197,8 @@ _GETLEADERBOARD = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=223,
-  serialized_end=302,
+  serialized_start=187,
+  serialized_end=222,
 )
 
 
@@ -256,8 +242,8 @@ _LEADERBOARDRECORD = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=304,
-  serialized_end=366,
+  serialized_start=224,
+  serialized_end=286,
 )
 
 
@@ -301,19 +287,17 @@ _LEADERBOARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=369,
-  serialized_end=509,
+  serialized_start=289,
+  serialized_end=429,
 )
 
-_PLAYERSCORE.fields_by_name['token'].message_type = _TOKEN
-_GETLEADERBOARD.fields_by_name['token'].message_type = _TOKEN
 _LEADERBOARDRESPONSE.fields_by_name['results'].message_type = _LEADERBOARDRECORD
 _LEADERBOARDRESPONSE.fields_by_name['around_me'].message_type = _LEADERBOARDRECORD
 DESCRIPTOR.message_types_by_name['LoginPassword'] = _LOGINPASSWORD
-DESCRIPTOR.message_types_by_name['Token'] = _TOKEN
+DESCRIPTOR.message_types_by_name['TokenAuth'] = _TOKENAUTH
 DESCRIPTOR.message_types_by_name['PlayerScore'] = _PLAYERSCORE
 DESCRIPTOR.message_types_by_name['ScoreResponse'] = _SCORERESPONSE
-DESCRIPTOR.message_types_by_name['GetLeaderBoard'] = _GETLEADERBOARD
+DESCRIPTOR.message_types_by_name['GetLB'] = _GETLB
 DESCRIPTOR.message_types_by_name['LeaderBoardRecord'] = _LEADERBOARDRECORD
 DESCRIPTOR.message_types_by_name['LeaderBoardResponse'] = _LEADERBOARDRESPONSE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -325,12 +309,12 @@ LoginPassword = _reflection.GeneratedProtocolMessageType('LoginPassword', (_mess
   })
 _sym_db.RegisterMessage(LoginPassword)
 
-Token = _reflection.GeneratedProtocolMessageType('Token', (_message.Message,), {
-  'DESCRIPTOR' : _TOKEN,
+TokenAuth = _reflection.GeneratedProtocolMessageType('TokenAuth', (_message.Message,), {
+  'DESCRIPTOR' : _TOKENAUTH,
   '__module__' : 'leaderboard_pb2'
-  # @@protoc_insertion_point(class_scope:leaderboard.Token)
+  # @@protoc_insertion_point(class_scope:leaderboard.TokenAuth)
   })
-_sym_db.RegisterMessage(Token)
+_sym_db.RegisterMessage(TokenAuth)
 
 PlayerScore = _reflection.GeneratedProtocolMessageType('PlayerScore', (_message.Message,), {
   'DESCRIPTOR' : _PLAYERSCORE,
@@ -346,12 +330,12 @@ ScoreResponse = _reflection.GeneratedProtocolMessageType('ScoreResponse', (_mess
   })
 _sym_db.RegisterMessage(ScoreResponse)
 
-GetLeaderBoard = _reflection.GeneratedProtocolMessageType('GetLeaderBoard', (_message.Message,), {
-  'DESCRIPTOR' : _GETLEADERBOARD,
+GetLB = _reflection.GeneratedProtocolMessageType('GetLB', (_message.Message,), {
+  'DESCRIPTOR' : _GETLB,
   '__module__' : 'leaderboard_pb2'
-  # @@protoc_insertion_point(class_scope:leaderboard.GetLeaderBoard)
+  # @@protoc_insertion_point(class_scope:leaderboard.GetLB)
   })
-_sym_db.RegisterMessage(GetLeaderBoard)
+_sym_db.RegisterMessage(GetLB)
 
 LeaderBoardRecord = _reflection.GeneratedProtocolMessageType('LeaderBoardRecord', (_message.Message,), {
   'DESCRIPTOR' : _LEADERBOARDRECORD,
@@ -368,7 +352,6 @@ LeaderBoardResponse = _reflection.GeneratedProtocolMessageType('LeaderBoardRespo
 _sym_db.RegisterMessage(LeaderBoardResponse)
 
 
-DESCRIPTOR._options = None
 
 _LEADERBOARD = _descriptor.ServiceDescriptor(
   name='LeaderBoard',
@@ -376,8 +359,8 @@ _LEADERBOARD = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=512,
-  serialized_end=754,
+  serialized_start=432,
+  serialized_end=674,
   methods=[
   _descriptor.MethodDescriptor(
     name='AuthenticateUser',
@@ -385,7 +368,7 @@ _LEADERBOARD = _descriptor.ServiceDescriptor(
     index=0,
     containing_service=None,
     input_type=_LOGINPASSWORD,
-    output_type=_TOKEN,
+    output_type=_TOKENAUTH,
     serialized_options=None,
   ),
   _descriptor.MethodDescriptor(
@@ -398,11 +381,11 @@ _LEADERBOARD = _descriptor.ServiceDescriptor(
     serialized_options=None,
   ),
   _descriptor.MethodDescriptor(
-    name='RouteChat',
-    full_name='leaderboard.LeaderBoard.RouteChat',
+    name='GetLeaderBoard',
+    full_name='leaderboard.LeaderBoard.GetLeaderBoard',
     index=2,
     containing_service=None,
-    input_type=_GETLEADERBOARD,
+    input_type=_GETLB,
     output_type=_LEADERBOARDRESPONSE,
     serialized_options=None,
   ),

@@ -1,16 +1,13 @@
 syntax = "proto3";
 
-option objc_class_prefix = "LB";
-
 package leaderboard;
 
-// Interface exported by the server.
-service LeaderBoard {
+service LeaderBoard { // Interface exported by the server.
   rpc AuthenticateUser (LoginPassword) returns (TokenAuth) {}
 
   rpc RecordPlayerScore(stream PlayerScore) returns (stream ScoreResponse) {}
 
-  rpc RouteChat(GetLeaderBoard) returns (LeaderBoardResponse) {}
+  rpc GetLeaderBoard(GetLB) returns (LeaderBoardResponse) {}
 }
 
 message LoginPassword {
@@ -31,7 +28,7 @@ message ScoreResponse {
   int64 rank = 1;
 }
 
-message GetLeaderBoard {
+message GetLB {
   int32 page = 1;
   string name = 2;
 }
