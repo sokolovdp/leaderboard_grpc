@@ -8,7 +8,7 @@ package leaderboard;
 service LeaderBoard {
   rpc AuthenticateUser (LoginPassword) returns (Token) {}
 
-  rpc RecordPlayerScore(PlayerScore) returns (ScoreResponse) {}
+  rpc RecordPlayerScore(stream PlayerScore) returns (stream ScoreResponse) {}
 
   rpc RouteChat(GetLeaderBoard) returns (LeaderBoardResponse) {}
 }
