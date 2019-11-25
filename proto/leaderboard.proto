@@ -6,7 +6,7 @@ package leaderboard;
 
 // Interface exported by the server.
 service LeaderBoard {
-  rpc AuthenticateUser (LoginPassword) returns (Token) {}
+  rpc AuthenticateUser (LoginPassword) returns (TokenAuth) {}
 
   rpc RecordPlayerScore(stream PlayerScore) returns (stream ScoreResponse) {}
 
@@ -18,14 +18,13 @@ message LoginPassword {
   string password = 2;
 }
 
-message Token {
-  string auth_token = 1;
+message TokenAuth {
+  string token = 1;
 }
 
 message PlayerScore {
-  Token token = 1;
-  string name = 2;
-  int64 score = 3;
+  string name = 1;
+  int64 score = 2;
 }
 
 message ScoreResponse {
@@ -33,9 +32,8 @@ message ScoreResponse {
 }
 
 message GetLeaderBoard {
-  Token token = 1;
-  int32 page = 2;
-  string name = 3;
+  int32 page = 1;
+  string name = 2;
 }
 
 message LeaderBoardRecord {
