@@ -1,5 +1,6 @@
 import json
 from proto import leaderboard_pb2
+import random
 
 
 def setup_database():
@@ -19,9 +20,9 @@ def store_player_score(db_connection, player_score):
 
     print(f'store player score: {player_score.name} {player_score.score}')
 
-    rank = 101
+    rank = random.randint(1, 100)
 
-    return rank
+    return leaderboard_pb2.ScoreResponse(name=player_score.name, rank=rank)
 
 
 def get_leaderboard(db_connection, get_lb):
