@@ -15,11 +15,8 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
         self.db_connection = resources.setup_database()
 
     def AuthenticateUser(self, request, context):
-        token = resources.get_token(self.db_connection, request)
-        if token is None:
-            return leaderboard_pb2.TokenAuth(token="")
-        else:
-            return leaderboard_pb2.TokenAuth(token=token)
+        auth_token = resources.get_token(self.db_connection, request)
+        return auth_token
 
     def RecordPlayerScore(self, request_iterator, context):
         for player_score in request_iterator:
