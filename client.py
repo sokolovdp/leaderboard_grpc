@@ -47,10 +47,14 @@ def run():
         stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
 
         print("-------------- Get Token --------------")
-        token = get_auth_token(stub, "dmitrii", "sokol1959")
+        login = 'dmitrii'
+        password = 'sokol1959'
+        token = get_auth_token(stub, login, password)
         if token:
             token_metadata = ('authorization', f'Bearer {token}')
             resources.logger.info('authorization token received')
+        else:
+            resources.logger.info('authorization failed for login: %s' % login)
 
         print("-------------- Send Player Scores --------------")
         player_ranks = send_player_scores(stub)

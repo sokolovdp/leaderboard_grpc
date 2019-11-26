@@ -21,12 +21,13 @@ def db_connection():
 def db_get_token(db_connection, request):
     decoded_credentials = b64decode(request.data.encode('utf-8')).decode('utf-8')
     login, password = decoded_credentials.split(':')
-    logger.info(f'check credentials for login: {login}')
     if login == 'dmitrii' and password == 'sokol1959':
+        logger.info('login: %s credentials are valid' % login)
         token = "super_secret_token_from_database"
         return leaderboard_pb2.TokenAuth(token=token)
     else:
-        return ''
+        logger.info('login: %s credentials are invalid!' % login)
+        return leaderboard_pb2.TokenAuth(token='')
 
 
 def db_save_player_score(db_connection, player_score):

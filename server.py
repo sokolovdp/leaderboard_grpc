@@ -19,7 +19,8 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
 
     def AuthenticateUser(self, request, context):
         auth_token = resources.db_get_token(self.db_connection, request)
-        token_validator.set_token(auth_token)
+        if auth_token.token:  # if it's valid store value in validator
+            token_validator.set_token(auth_token)
         return auth_token
 
     def RecordPlayerScore(self, request_iterator, context):
