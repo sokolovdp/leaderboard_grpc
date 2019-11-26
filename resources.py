@@ -24,6 +24,7 @@ def db_connection():
     db = redis.Redis()
     # init DB with test data
     db.set(f'LOGIN_dmitrii', 'sokol1959')  # passwords should be encrypted and salted
+    db.zrem(config.REDIS_LEADERBOARD, 'kiki', 'sava', 'tuta')
 
     return db
 
@@ -43,8 +44,8 @@ def db_get_token(db, request):
 
 def db_save_player_score(db, player_score):
     current_score = db.zscore(config.REDIS_LEADERBOARD, player_score.name)
-    if player_score.score > int(current_score):
-        logger.info('player: %s new_score: %d' % (player_score.name, player_score.score))
+    logger.info('player: %s old_score: %s new_score: %s' % (player_score.name, current_score, player_score.score))
+    if not current_score or player_score.score > int(current_score):
         db.zadd(config.REDIS_LEADERBOARD, {player_score.name: player_score.score})
     rank = db.zrevrank(config.REDIS_LEADERBOARD, player_score.name) + 1
     return leaderboard_pb2.ScoreResponse(name=player_score.name, rank=rank)
