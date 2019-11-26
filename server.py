@@ -51,19 +51,18 @@ def _stream_stream_rpc_terminator(code, details):
 
 class AuthTokenValidatorInterceptor(grpc.ServerInterceptor):
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self._header = 'authorization'
         self._value = None
         self.code = grpc.StatusCode.UNAUTHENTICATED
         self.details = 'Invalid token!'
-        self._terminator = _unary_unary_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, 'Invalid token!')
 
     def set_token(self, auth_token):
         self._value = f'Bearer {auth_token.token}'
 
     def intercept_service(self, continuation, handler_call_details):
         meta_data = handler_call_details.invocation_metadata
-        method = handler_call_details.method.split('/')[-1]
+        method = handler_call_details.method.rsplit('/', 1)[-1]
         if method == LeaderBoardServicer.AuthenticateUser.__name__:
             return continuation(handler_call_details)
         elif (self._header, self._value) in meta_data:
@@ -78,9 +77,10 @@ def serve():
     global token_validator
 
     token_validator = AuthTokenValidatorInterceptor()
+
     server = grpc.server(futures.ThreadPoolExecutor(
         max_workers=config.MAX_WORKERS),
-        interceptors=[token_validator]
+        interceptors=(token_validator, )
     )
     leaderboard_pb2_grpc.add_LeaderBoardServicer_to_server(LeaderBoardServicer(), server)
     server.add_insecure_port(config.SERVER_PORT)
