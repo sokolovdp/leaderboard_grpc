@@ -21,27 +21,27 @@ message TokenAuth {
 
 message PlayerScore {
     string name = 1;
-    int64 score = 2;
+    uint32 score = 2;
 }
 
 message ScoreResponse {
     string name = 1;
-    int32 rank = 2;
+    uint32 rank = 2;
 }
 
 message GetLB {
-    int32 page = 1;
+    uint32 page = 1;
     string name = 2;
 }
 
 message LeaderBoardRecord {
     string name = 1;
-    int64 score = 2;
-    int32 rank = 3;
+    uint32 score = 2;
+    uint32 rank = 3;
 }
 
 message LeaderBoardResponse {
     repeated LeaderBoardRecord results = 1;
     repeated LeaderBoardRecord around_me = 2;
-    int32 next_page = 3;
+    uint32 next_page = 3;
 }
