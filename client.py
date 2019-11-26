@@ -45,8 +45,6 @@ def run():
 
     with grpc.insecure_channel(config.SERVER_PORT) as channel:
         stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
-
-        print("-------------- Get Token --------------")
         login = 'dmitrii'
         password = 'sokol1959'
         token = get_auth_token(stub, login, password)
@@ -55,8 +53,8 @@ def run():
             resources.logger.info('authorization token received')
         else:
             resources.logger.info('authorization failed for login: %s' % login)
+            return
 
-        print("-------------- Send Player Scores --------------")
         player_ranks = send_player_scores(stub)
         try:
             for rank in player_ranks:
