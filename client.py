@@ -47,8 +47,8 @@ def run():
 
     with grpc.insecure_channel(config.SERVER_PORT) as channel:
         stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
-        login = 'dmitrii'
-        password = 'sokol1959'
+        login = config.DEMO_LOGIN
+        password = config.DEMO_PASSWORD
         token = get_auth_token(stub, login, password)
         if token:
             token_metadata = ('authorization', f'Bearer {token}')

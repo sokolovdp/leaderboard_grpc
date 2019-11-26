@@ -1,4 +1,4 @@
-import random
+import hashlib
 import logging
 from base64 import b64decode
 
@@ -15,17 +15,15 @@ logging.basicConfig(
 logger = logging.getLogger('leaderboard')
 
 
-logins = [
-
-]
+def hash_password(password):
+    salted = password + config.PASSWORD_SALT
+    return hashlib.sha512(salted.encode("utf8")).hexdigest()
 
 
 def db_connection():
     db = redis.Redis()
-    # init DB with test data
-    db.set(f'LOGIN_dmitrii', 'sokol1959')  # passwords should be encrypted and salted
-    db.zrem(config.REDIS_LEADERBOARD, 'kiki', 'sava', 'tuta')
-
+    db.set(f'LOGIN_{config.DEMO_LOGIN}', hash_password(config.DEMO_PASSWORD))  # store passwords
+    db.zrem(config.REDIS_LEADERBOARD, 'kiki', 'sava', 'tuta')  # clear score list
     return db
 
 
@@ -33,7 +31,7 @@ def db_get_token(db, request):
     decoded_credentials = b64decode(request.data.encode('utf-8')).decode('utf-8')
     login, password = decoded_credentials.split(':')
     check = db.get(f'LOGIN_{login}')
-    if password == check.decode('utf-8'):
+    if hash_password(password) == check.decode('utf-8'):
         logger.info('login: %s credentials are valid' % login)
         token = "super_secret_token_from_database"
         return leaderboard_pb2.TokenAuth(token=token)

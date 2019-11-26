@@ -1,3 +1,4 @@
+import os
 import logging
 
 LOGGING_LEVEL = logging.DEBUG
@@ -10,4 +11,7 @@ SERVER_PORT = '[::]:50051'
 REDIS_HOST = ''
 REDIS_LEADERBOARD = 'leaderboard'
 
+PASSWORD_SALT = os.getenv('PASSWORD_HASH', 'quick fox jumps over the lazy dog')
 
+DEMO_LOGIN = os.getenv('DEMO_LOGIN', 'zz_top')
+DEMO_PASSWORD = os.getenv('DEMO_PASSWORD', 'zz_top')
