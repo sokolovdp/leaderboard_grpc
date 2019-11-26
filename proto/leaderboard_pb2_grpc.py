@@ -16,7 +16,7 @@ class LeaderBoardStub(object):
     """
     self.AuthenticateUser = channel.unary_unary(
         '/leaderboard.LeaderBoard/AuthenticateUser',
-        request_serializer=leaderboard__pb2.LoginPassword.SerializeToString,
+        request_serializer=leaderboard__pb2.BasicCredentials.SerializeToString,
         response_deserializer=leaderboard__pb2.TokenAuth.FromString,
         )
     self.RecordPlayerScore = channel.stream_stream(
@@ -61,7 +61,7 @@ def add_LeaderBoardServicer_to_server(servicer, server):
   rpc_method_handlers = {
       'AuthenticateUser': grpc.unary_unary_rpc_method_handler(
           servicer.AuthenticateUser,
-          request_deserializer=leaderboard__pb2.LoginPassword.FromString,
+          request_deserializer=leaderboard__pb2.BasicCredentials.FromString,
           response_serializer=leaderboard__pb2.TokenAuth.SerializeToString,
       ),
       'RecordPlayerScore': grpc.stream_stream_rpc_method_handler(

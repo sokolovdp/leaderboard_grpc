@@ -1,4 +1,5 @@
 import grpc
+from base64 import b64encode
 
 from proto import leaderboard_pb2
 from proto import leaderboard_pb2_grpc
@@ -16,9 +17,8 @@ token_metadata = None
 
 
 def get_auth_token(stub, login, password):
-    credentials = leaderboard_pb2.LoginPassword()
-    credentials.login = login
-    credentials.password = password
+    credentials = leaderboard_pb2.BasicCredentials()
+    credentials.data = b64encode(f'{login}:{password}'.encode('utf-8')).decode('utf-8')
     token_auth = stub.AuthenticateUser(credentials)
     return token_auth.token
 

@@ -20,29 +20,22 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='leaderboard',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x11leaderboard.proto\x12\x0bleaderboard\"0\n\rLoginPassword\x12\r\n\x05login\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"\x1a\n\tTokenAuth\x12\r\n\x05token\x18\x01 \x01(\t\"*\n\x0bPlayerScore\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\r\"+\n\rScoreResponse\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0c\n\x04rank\x18\x02 \x01(\r\"#\n\x05GetLB\x12\x0c\n\x04page\x18\x01 \x01(\r\x12\x0c\n\x04name\x18\x02 \x01(\t\">\n\x11LeaderBoardRecord\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\r\x12\x0c\n\x04rank\x18\x03 \x01(\r\"\x8c\x01\n\x13LeaderBoardResponse\x12/\n\x07results\x18\x01 \x03(\x0b\x32\x1e.leaderboard.LeaderBoardRecord\x12\x31\n\taround_me\x18\x02 \x03(\x0b\x32\x1e.leaderboard.LeaderBoardRecord\x12\x11\n\tnext_page\x18\x03 \x01(\r2\xf2\x01\n\x0bLeaderBoard\x12H\n\x10\x41uthenticateUser\x12\x1a.leaderboard.LoginPassword\x1a\x16.leaderboard.TokenAuth\"\x00\x12O\n\x11RecordPlayerScore\x12\x18.leaderboard.PlayerScore\x1a\x1a.leaderboard.ScoreResponse\"\x00(\x01\x30\x01\x12H\n\x0eGetLeaderBoard\x12\x12.leaderboard.GetLB\x1a .leaderboard.LeaderBoardResponse\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x11leaderboard.proto\x12\x0bleaderboard\" \n\x10\x42\x61sicCredentials\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\"\x1a\n\tTokenAuth\x12\r\n\x05token\x18\x01 \x01(\t\"*\n\x0bPlayerScore\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\r\"+\n\rScoreResponse\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0c\n\x04rank\x18\x02 \x01(\r\"#\n\x05GetLB\x12\x0c\n\x04page\x18\x01 \x01(\r\x12\x0c\n\x04name\x18\x02 \x01(\t\">\n\x11LeaderBoardRecord\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\r\x12\x0c\n\x04rank\x18\x03 \x01(\r\"\x8c\x01\n\x13LeaderBoardResponse\x12/\n\x07results\x18\x01 \x03(\x0b\x32\x1e.leaderboard.LeaderBoardRecord\x12\x31\n\taround_me\x18\x02 \x03(\x0b\x32\x1e.leaderboard.LeaderBoardRecord\x12\x11\n\tnext_page\x18\x03 \x01(\r2\xf5\x01\n\x0bLeaderBoard\x12K\n\x10\x41uthenticateUser\x12\x1d.leaderboard.BasicCredentials\x1a\x16.leaderboard.TokenAuth\"\x00\x12O\n\x11RecordPlayerScore\x12\x18.leaderboard.PlayerScore\x1a\x1a.leaderboard.ScoreResponse\"\x00(\x01\x30\x01\x12H\n\x0eGetLeaderBoard\x12\x12.leaderboard.GetLB\x1a .leaderboard.LeaderBoardResponse\"\x00\x62\x06proto3')
 )
 
 
 
 
-_LOGINPASSWORD = _descriptor.Descriptor(
-  name='LoginPassword',
-  full_name='leaderboard.LoginPassword',
+_BASICCREDENTIALS = _descriptor.Descriptor(
+  name='BasicCredentials',
+  full_name='leaderboard.BasicCredentials',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='login', full_name='leaderboard.LoginPassword.login', index=0,
+      name='data', full_name='leaderboard.BasicCredentials.data', index=0,
       number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='password', full_name='leaderboard.LoginPassword.password', index=1,
-      number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -60,7 +53,7 @@ _LOGINPASSWORD = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=34,
-  serialized_end=82,
+  serialized_end=66,
 )
 
 
@@ -90,8 +83,8 @@ _TOKENAUTH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=84,
-  serialized_end=110,
+  serialized_start=68,
+  serialized_end=94,
 )
 
 
@@ -128,8 +121,8 @@ _PLAYERSCORE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=112,
-  serialized_end=154,
+  serialized_start=96,
+  serialized_end=138,
 )
 
 
@@ -166,8 +159,8 @@ _SCORERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=156,
-  serialized_end=199,
+  serialized_start=140,
+  serialized_end=183,
 )
 
 
@@ -204,8 +197,8 @@ _GETLB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=201,
-  serialized_end=236,
+  serialized_start=185,
+  serialized_end=220,
 )
 
 
@@ -249,8 +242,8 @@ _LEADERBOARDRECORD = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=238,
-  serialized_end=300,
+  serialized_start=222,
+  serialized_end=284,
 )
 
 
@@ -294,13 +287,13 @@ _LEADERBOARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=303,
-  serialized_end=443,
+  serialized_start=287,
+  serialized_end=427,
 )
 
 _LEADERBOARDRESPONSE.fields_by_name['results'].message_type = _LEADERBOARDRECORD
 _LEADERBOARDRESPONSE.fields_by_name['around_me'].message_type = _LEADERBOARDRECORD
-DESCRIPTOR.message_types_by_name['LoginPassword'] = _LOGINPASSWORD
+DESCRIPTOR.message_types_by_name['BasicCredentials'] = _BASICCREDENTIALS
 DESCRIPTOR.message_types_by_name['TokenAuth'] = _TOKENAUTH
 DESCRIPTOR.message_types_by_name['PlayerScore'] = _PLAYERSCORE
 DESCRIPTOR.message_types_by_name['ScoreResponse'] = _SCORERESPONSE
@@ -309,12 +302,12 @@ DESCRIPTOR.message_types_by_name['LeaderBoardRecord'] = _LEADERBOARDRECORD
 DESCRIPTOR.message_types_by_name['LeaderBoardResponse'] = _LEADERBOARDRESPONSE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-LoginPassword = _reflection.GeneratedProtocolMessageType('LoginPassword', (_message.Message,), {
-  'DESCRIPTOR' : _LOGINPASSWORD,
+BasicCredentials = _reflection.GeneratedProtocolMessageType('BasicCredentials', (_message.Message,), {
+  'DESCRIPTOR' : _BASICCREDENTIALS,
   '__module__' : 'leaderboard_pb2'
-  # @@protoc_insertion_point(class_scope:leaderboard.LoginPassword)
+  # @@protoc_insertion_point(class_scope:leaderboard.BasicCredentials)
   })
-_sym_db.RegisterMessage(LoginPassword)
+_sym_db.RegisterMessage(BasicCredentials)
 
 TokenAuth = _reflection.GeneratedProtocolMessageType('TokenAuth', (_message.Message,), {
   'DESCRIPTOR' : _TOKENAUTH,
@@ -366,15 +359,15 @@ _LEADERBOARD = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=446,
-  serialized_end=688,
+  serialized_start=430,
+  serialized_end=675,
   methods=[
   _descriptor.MethodDescriptor(
     name='AuthenticateUser',
     full_name='leaderboard.LeaderBoard.AuthenticateUser',
     index=0,
     containing_service=None,
-    input_type=_LOGINPASSWORD,
+    input_type=_BASICCREDENTIALS,
     output_type=_TOKENAUTH,
     serialized_options=None,
   ),

@@ -1,6 +1,8 @@
 import random
-from proto import leaderboard_pb2
 import logging
+from base64 import b64decode
+
+from proto import leaderboard_pb2
 
 import config
 
@@ -16,11 +18,15 @@ def setup_database():
     return None
 
 
-def get_token(db_connection, login_password):
-    logger.info(f'check credentials: {login_password.login} {login_password.password}')
-
-    token = "super_secret_token_from_database"
-    return leaderboard_pb2.TokenAuth(token=token)
+def get_token(db_connection, request):
+    decoded_credentials = b64decode(request.data.encode('utf-8')).decode('utf-8')
+    login, password = decoded_credentials.split(':')
+    logger.info(f'check credentials for login: {login}')
+    if login == 'dmitrii' and password == 'sokol1959':
+        token = "super_secret_token_from_database"
+        return leaderboard_pb2.TokenAuth(token=token)
+    else:
+        return ''
 
 
 def store_player_score(db_connection, player_score):
