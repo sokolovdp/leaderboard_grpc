@@ -2,8 +2,9 @@ import random
 import logging
 from base64 import b64decode
 
-from proto import leaderboard_pb2
+import redis
 
+from proto import leaderboard_pb2
 import config
 
 logging.basicConfig(
@@ -14,14 +15,24 @@ logging.basicConfig(
 logger = logging.getLogger('leaderboard')
 
 
+logins = [
+
+]
+
+
 def db_connection():
-    return None
+    db = redis.Redis()
+    # init DB with test data
+    db.set(f'LOGIN_dmitrii', 'sokol1959')
+
+    return db
 
 
 def db_get_token(db_connection, request):
     decoded_credentials = b64decode(request.data.encode('utf-8')).decode('utf-8')
     login, password = decoded_credentials.split(':')
-    if login == 'dmitrii' and password == 'sokol1959':
+    check = db_connection.get(f'LOGIN_{login}')
+    if password == check.decode('utf-8'):
         logger.info('login: %s credentials are valid' % login)
         token = "super_secret_token_from_database"
         return leaderboard_pb2.TokenAuth(token=token)
