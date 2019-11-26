@@ -23,15 +23,15 @@ logins = [
 def db_connection():
     db = redis.Redis()
     # init DB with test data
-    db.set(f'LOGIN_dmitrii', 'sokol1959')
+    db.set(f'LOGIN_dmitrii', 'sokol1959')  #
 
     return db
 
 
-def db_get_token(db_connection, request):
+def db_get_token(db, request):
     decoded_credentials = b64decode(request.data.encode('utf-8')).decode('utf-8')
     login, password = decoded_credentials.split(':')
-    check = db_connection.get(f'LOGIN_{login}')
+    check = db.get(f'LOGIN_{login}')
     if password == check.decode('utf-8'):
         logger.info('login: %s credentials are valid' % login)
         token = "super_secret_token_from_database"
