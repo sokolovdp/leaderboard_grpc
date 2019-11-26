@@ -4,8 +4,9 @@ import grpc
 
 from proto import leaderboard_pb2
 from proto import leaderboard_pb2_grpc
-import resources
 
+import resources
+import config
 
 token_validator = None
 
@@ -79,14 +80,16 @@ def serve():
     global token_validator
 
     token_validator = AuthTokenValidatorInterceptor()
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=3), interceptors=[token_validator])
+    server = grpc.server(futures.ThreadPoolExecutor(
+        max_workers=config.MAX_WORKERS),
+        interceptors=[token_validator]
+    )
     leaderboard_pb2_grpc.add_LeaderBoardServicer_to_server(LeaderBoardServicer(), server)
-    server.add_insecure_port('[::]:50051')
-    resources.logger()
+    server.add_insecure_port(config.SERVER_PORT)
     server.start()
+    resources.logger.info('leaderboard started at: %s workers: %d' % (config.SERVER_PORT, config.MAX_WORKERS))
     server.wait_for_termination()
 
 
 if __name__ == '__main__':
-
     serve()

@@ -1,11 +1,10 @@
-from collections import namedtuple
-import logging
-
 import grpc
 
 from proto import leaderboard_pb2
 from proto import leaderboard_pb2_grpc
 
+import config
+import resources
 
 dummy_scores = [
     ('tuta', 12),
@@ -13,7 +12,6 @@ dummy_scores = [
     ('kiki', 7)
 ]
 
-CallMetadata = namedtuple('CallMetaData', ['head', 'value'])
 
 token_metadata = None
 
@@ -45,20 +43,23 @@ def send_player_scores(stub):
 
 def run():
     global token_metadata
-    with grpc.insecure_channel('localhost:50051') as channel:
+
+    with grpc.insecure_channel(config.SERVER_PORT) as channel:
         stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
 
         print("-------------- Get Token --------------")
         token = get_auth_token(stub, "dmitrii", "sokol1959")
-        token_metadata = CallMetadata(head='authorization', value=f'Bearer {token}XX')
+        if token:
+            token_metadata = ('authorization', f'Bearer {token}')
+            resources.logger.info('authorization token received')
 
         print("-------------- Send Player Scores --------------")
         player_ranks = send_player_scores(stub)
         try:
             for rank in player_ranks:
-                print(f'player {rank.name} rank is {rank.rank}')
+                resources.logger.info('player %s rank is %d' % (rank.name, rank.rank))
         except grpc.RpcError as e:
-            print("gRPC error:",  str(e))
+            resources.logger.error('gRPC error: %s' % str(e))
 
         #
         # print("-------------- Get Leader Board --------------")
@@ -66,5 +67,4 @@ def run():
 
 
 if __name__ == '__main__':
-    logging.basicConfig()
     run()

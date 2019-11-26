@@ -2,12 +2,15 @@ import random
 from proto import leaderboard_pb2
 import logging
 
+import config
 
 logging.basicConfig(
-
+    level=config.LOGGING_LEVEL,
+    format=config.LOGGING_FORMAT,
+    datefmt=config.LOGGING_DATE_FORMAT
 )
+logger = logging.getLogger('leaderboard')
 
-logger = logging.l
 
 
 def setup_database():
