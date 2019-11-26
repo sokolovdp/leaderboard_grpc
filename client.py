@@ -1,3 +1,4 @@
+from collections import namedtuple
 import logging
 
 import grpc
@@ -12,7 +13,9 @@ dummy_scores = [
     ('kiki', 7)
 ]
 
-token_metadata = None
+CallMetadata = namedtuple('CallMetaData', ['head', 'value'])
+
+token_metadata = CallMetadata(head='authorization', value='')
 
 
 def get_auth_token(stub, login, password):
@@ -47,8 +50,8 @@ def run():
 
         print("-------------- Get Token --------------")
         token = get_auth_token(stub, "dmitrii", "sokol1959")
-        print(f'Auth_token: "{token}"')
-        token_metadata = [('authorization', 'Bearer ' + token)]
+        token_metadata.value = f'Bearer {token}'
+
 
         print("-------------- Send Player Scores --------------")
         player_ranks = send_player_scores(stub)
