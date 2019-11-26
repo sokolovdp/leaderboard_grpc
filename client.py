@@ -10,9 +10,11 @@ import resources
 dummy_scores = [
     ('tuta', 12),
     ('sava', 35),
-    ('kiki', 7)
+    ('kiki', 7),
+    ('tuta', 12),
+    ('sava', 50),
+    ('kiki', 70),
 ]
-
 token_metadata = None
 
 

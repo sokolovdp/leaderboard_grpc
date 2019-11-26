@@ -23,7 +23,7 @@ logins = [
 def db_connection():
     db = redis.Redis()
     # init DB with test data
-    db.set(f'LOGIN_dmitrii', 'sokol1959')  #
+    db.set(f'LOGIN_dmitrii', 'sokol1959')  # passwords should be encrypted and salted
 
     return db
 
@@ -41,11 +41,14 @@ def db_get_token(db, request):
         return leaderboard_pb2.TokenAuth(token='')
 
 
-def db_save_player_score(db_connection, player_score):
-    print(f'store player score: {player_score.name} {player_score.score}')
+def db_save_player_score(db, player_score):
+    current_score = db.zscore(config.REDIS_LEADERBOARD, player_score.name)
+    if player_score.score > int(current_score):
+        logger.info('player: %s new_score: %d' % (player_score.name, player_score.score))
+        db.zadd(config.REDIS_LEADERBOARD, {player_score.name: player_score.score})
+    rank = db.zrevrank(config.REDIS_LEADERBOARD, player_score.name) + 1
+    return leaderboard_pb2.ScoreResponse(name=player_score.name, rank=rank)
 
-    return leaderboard_pb2.ScoreResponse(name=player_score.name, rank=random.randint(1, 100))
 
-
-def get_leaderboard(db_connection, get_lb):
+def get_leaderboard(db, get_lb):
     return 0, None, None
