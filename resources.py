@@ -1,5 +1,13 @@
 import random
 from proto import leaderboard_pb2
+import logging
+
+
+logging.basicConfig(
+
+)
+
+logger = logging.l
 
 
 def setup_database():

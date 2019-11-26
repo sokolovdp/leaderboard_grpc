@@ -15,7 +15,7 @@ dummy_scores = [
 
 CallMetadata = namedtuple('CallMetaData', ['head', 'value'])
 
-token_metadata = CallMetadata(head='authorization', value='')
+token_metadata = None
 
 
 def get_auth_token(stub, login, password):
@@ -50,16 +50,15 @@ def run():
 
         print("-------------- Get Token --------------")
         token = get_auth_token(stub, "dmitrii", "sokol1959")
-        token_metadata.value = f'Bearer {token}'
-
+        token_metadata = CallMetadata(head='authorization', value=f'Bearer {token}XX')
 
         print("-------------- Send Player Scores --------------")
         player_ranks = send_player_scores(stub)
         try:
             for rank in player_ranks:
                 print(f'player {rank.name} rank is {rank.rank}')
-        except grpc._channel._Rendezvous as e:
-            print("gRPC error:", type(e), str(e))
+        except grpc.RpcError as e:
+            print("gRPC error:",  str(e))
 
         #
         # print("-------------- Get Leader Board --------------")

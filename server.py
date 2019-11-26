@@ -1,11 +1,13 @@
 from concurrent import futures
-import logging
 
 import grpc
 
 from proto import leaderboard_pb2
 from proto import leaderboard_pb2_grpc
 import resources
+
+
+token_validator = None
 
 
 class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
@@ -16,11 +18,10 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
 
     def AuthenticateUser(self, request, context):
         auth_token = resources.get_token(self.db_connection, request)
+        token_validator.set_token(auth_token)
         return auth_token
 
     def RecordPlayerScore(self, request_iterator, context):
-        credentials = context.invocation_metadata()
-        print('>>>>>>>>>>>>>>>>>>>>>>', credentials.authorization)
         for player_score in request_iterator:
             yield resources.store_player_score(self.db_connection, player_score)
 
@@ -33,14 +34,59 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
         return leaderboard_response
 
 
+def _unary_unary_rpc_terminator(code, details):
+
+    def terminate(ignored_request, context):
+        context.abort(code, details)
+
+    return grpc.unary_unary_rpc_method_handler(terminate)
+
+
+def _stream_stream_rpc_terminator(code, details):
+
+    def terminate(ignored_request, context):
+        context.abort(code, details)
+
+    return grpc.stream_stream_rpc_method_handler(terminate)
+
+
+class AuthTokenValidatorInterceptor(grpc.ServerInterceptor):
+
+    def __init__(self):
+        self._header = 'authorization'
+        self._value = None
+        self.code = grpc.StatusCode.UNAUTHENTICATED
+        self.details = 'Invalid token!'
+        self._terminator = _unary_unary_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, 'Invalid token!')
+
+    def set_token(self, auth_token):
+        self._value = f'Bearer {auth_token.token}'
+
+    def intercept_service(self, continuation, handler_call_details):
+        meta_data = handler_call_details.invocation_metadata
+        method = handler_call_details.method.split('/')[-1]
+        if method == LeaderBoardServicer.AuthenticateUser.__name__:
+            return continuation(handler_call_details)
+        elif (self._header, self._value) in meta_data:
+            return continuation(handler_call_details)
+        elif method == LeaderBoardServicer.RecordPlayerScore.__name__:
+            return _stream_stream_rpc_terminator(self.code, self.details)
+        else:
+            return _unary_unary_rpc_terminator(self.code, self.details)
+
+
 def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=3))
+    global token_validator
+
+    token_validator = AuthTokenValidatorInterceptor()
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=3), interceptors=[token_validator])
     leaderboard_pb2_grpc.add_LeaderBoardServicer_to_server(LeaderBoardServicer(), server)
     server.add_insecure_port('[::]:50051')
+    resources.logger()
     server.start()
     server.wait_for_termination()
 
 
 if __name__ == '__main__':
-    logging.basicConfig()
+
     serve()
