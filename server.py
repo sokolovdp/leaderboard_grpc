@@ -15,16 +15,16 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
     """Provides methods that implement functionality of Leader Board server."""
 
     def __init__(self):
-        self.db_connection = resources.setup_database()
+        self.db_connection = resources.db_connection()
 
     def AuthenticateUser(self, request, context):
-        auth_token = resources.get_token(self.db_connection, request)
+        auth_token = resources.db_get_token(self.db_connection, request)
         token_validator.set_token(auth_token)
         return auth_token
 
     def RecordPlayerScore(self, request_iterator, context):
         for player_score in request_iterator:
-            yield resources.store_player_score(self.db_connection, player_score)
+            yield resources.db_save_player_score(self.db_connection, player_score)
 
     def GetLeaderBoard(self, request, context):
         next_page, results, around_me = resources.get_leaderboard(self.db_connection, request)

@@ -14,11 +14,11 @@ logging.basicConfig(
 logger = logging.getLogger('leaderboard')
 
 
-def setup_database():
+def db_connection():
     return None
 
 
-def get_token(db_connection, request):
+def db_get_token(db_connection, request):
     decoded_credentials = b64decode(request.data.encode('utf-8')).decode('utf-8')
     login, password = decoded_credentials.split(':')
     logger.info(f'check credentials for login: {login}')
@@ -29,7 +29,7 @@ def get_token(db_connection, request):
         return ''
 
 
-def store_player_score(db_connection, player_score):
+def db_save_player_score(db_connection, player_score):
     print(f'store player score: {player_score.name} {player_score.score}')
 
     return leaderboard_pb2.ScoreResponse(name=player_score.name, rank=random.randint(1, 100))
