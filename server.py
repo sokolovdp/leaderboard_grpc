@@ -19,6 +19,8 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
         return auth_token
 
     def RecordPlayerScore(self, request_iterator, context):
+        credentials = context.invocation_metadata()
+        print('>>>>>>>>>>>>>>>>>>>>>>', credentials.authorization)
         for player_score in request_iterator:
             yield resources.store_player_score(self.db_connection, player_score)
 

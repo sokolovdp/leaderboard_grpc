@@ -12,6 +12,8 @@ dummy_scores = [
     ('kiki', 7)
 ]
 
+token_metadata = None
+
 
 def get_auth_token(stub, login, password):
     credentials = leaderboard_pb2.LoginPassword()
@@ -27,23 +29,35 @@ def score_generator():
 
 
 def send_player_scores(stub):
+    global token_metadata
     score_iterator = score_generator()
-    player_ranks = stub.RecordPlayerScore(score_iterator)
-    return player_ranks
+    try:
+        player_ranks = stub.RecordPlayerScore(score_iterator, metadata=[token_metadata])
+    except Exception as e:
+        print(str(e))
+        return []
+    else:
+        return player_ranks
 
 
 def run():
+    global token_metadata
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
 
         print("-------------- Get Token --------------")
         token = get_auth_token(stub, "dmitrii", "sokol1959")
         print(f'Auth_token: "{token}"')
+        token_metadata = [('authorization', 'Bearer ' + token)]
 
         print("-------------- Send Player Scores --------------")
         player_ranks = send_player_scores(stub)
-        for rank in player_ranks:
-            print(f'player {rank.name} rank is {rank.rank}')
+        try:
+            for rank in player_ranks:
+                print(f'player {rank.name} rank is {rank.rank}')
+        except grpc._channel._Rendezvous as e:
+            print("gRPC error:", type(e), str(e))
+
         #
         # print("-------------- Get Leader Board --------------")
         # guide_record_route(stub)
