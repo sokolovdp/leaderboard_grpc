@@ -12,7 +12,6 @@ dummy_scores = [
     ('kiki', 7)
 ]
 
-
 token_metadata = None
 
 

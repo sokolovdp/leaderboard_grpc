@@ -36,7 +36,6 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
 
 
 def _unary_unary_rpc_terminator(code, details):
-
     def terminate(ignored_request, context):
         context.abort(code, details)
 
@@ -44,7 +43,6 @@ def _unary_unary_rpc_terminator(code, details):
 
 
 def _stream_stream_rpc_terminator(code, details):
-
     def terminate(ignored_request, context):
         context.abort(code, details)
 
