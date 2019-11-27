@@ -50,13 +50,11 @@ def db_save_player_score(db, player_score):
 
 
 def get_leaderboard(db, get_lb):
-    page = get_lb.page - 1 if get_lb.page > 0 else 0
-    name = get_lb.name
-    leaderboard_length = 0
-    next_page = get_lb.page + 1
-
+    leaderboard_count = db.zcount(config.REDIS_LEADERBOARD, '-inf', '+inf')
+    page = get_lb.page - 1 if get_lb.page > 0 else 0  # pages numerated from 1
     start_rank = page * config.LEADERBOARD_PAGE_SIZE
     last_rank = start_rank + config.LEADERBOARD_PAGE_SIZE
+    next_page = get_lb.page + 1 if last_rank < leaderboard_count else 0
     page_content = db.zrevrange(
         config.REDIS_LEADERBOARD,
         start_rank, last_rank,
@@ -67,4 +65,5 @@ def get_leaderboard(db, get_lb):
         leaderboard_pb2.LeaderBoardRecord(name=name, score=score, rank=rank)
         for (name, score), rank in zip(page_content, range(start_rank+1, last_rank+1, 1))
     ]
+    name = get_lb.name
     return next_page, leaderboard_page, []
