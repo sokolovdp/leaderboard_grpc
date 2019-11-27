@@ -1,6 +1,9 @@
 import grpc
 from base64 import b64encode
 
+from grpc_status import rpc_status
+from google.rpc import error_details_pb2
+
 from proto import leaderboard_pb2
 from proto import leaderboard_pb2_grpc
 
@@ -37,8 +40,16 @@ def send_player_scores(stub):
     score_iterator = score_generator()
     try:
         player_ranks = stub.RecordPlayerScore(score_iterator, metadata=[token_metadata])
-    except Exception as e:
-        resources.logger.info('send player score error: %s' % str(e))
+    except grpc.RpcError as e:
+        resources.logger.error('gRPC error: %s' % str(e))
+        status = rpc_status.from_call(e)
+        for detail in status.details:
+            if detail.Is(error_details_pb2.QuotaFailure.DESCRIPTOR):
+                info = error_details_pb2.QuotaFailure()
+                detail.Unpack(info)
+                resources.logger.error('Quota failure: %s', info)
+            else:
+                raise RuntimeError('Unexpected failure: %s' % detail)
         return []
     else:
         return player_ranks
@@ -52,8 +63,16 @@ def get_leaderboard_page(stub):
         get_lb.page = 5
         # get_lb.name = ''
         leaderboard_response = stub.GetLeaderBoardPages(get_lb, metadata=[token_metadata])
-    except Exception as e:
-        resources.logger.info('get leader board error: %s' % str(e))
+    except grpc.RpcError as rpc_error:
+        status = rpc_status.from_call(rpc_error)
+        resources.logger.error('gRPC error: %s' % str(rpc_error))
+        for detail in status.details:
+            if detail.Is(error_details_pb2.QuotaFailure.DESCRIPTOR):
+                info = error_details_pb2.QuotaFailure()
+                detail.Unpack(info)
+                resources.logger.error('Quota failure: %s', info)
+            else:
+                raise RuntimeError('Unexpected failure: %s' % detail)
         return None
     else:
         return leaderboard_response
@@ -75,16 +94,15 @@ def run():
             return
 
         player_ranks = send_player_scores(stub)
-        try:
-            for rank in player_ranks:
-                resources.logger.info('player %s rank is %d' % (rank.name, rank.rank))
-        except grpc.RpcError as e:
-            resources.logger.error('gRPC error: %s' % str(e))
+
+        for rank in player_ranks:
+            resources.logger.info('player %s rank is %d' % (rank.name, rank.rank))
 
         result = get_leaderboard_page(stub)
-        print(result.next_page)
-        print(result.results)
-        print(result.around_me)
+        if result:
+            print(result.next_page)
+            print(result.results)
+            print(result.around_me)
 
 
 if __name__ == '__main__':

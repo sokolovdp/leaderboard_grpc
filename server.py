@@ -14,21 +14,22 @@ import config
 token_validator = None
 
 
-def create_page_error_status(page):
+def create_invalid_argument_error_status(argument_name):
+    argument = f'{argument_name}'
     detail = any_pb2.Any()
     detail.Pack(
         error_details_pb2.QuotaFailure(
             violations=[
                 error_details_pb2.QuotaFailure.Violation(
-                    subject="page: %s" % page,
-                    description="Received invalid page number",
+                    subject=argument,
+                    description="invalid argument value"
                 )
             ],
         )
     )
     return status_pb2.Status(
         code=code_pb2.INVALID_ARGUMENT,
-        message='Page number exceeds maximum',
+        message=argument,
         details=[detail],
     )
 
@@ -53,8 +54,7 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
         next_page, results, around_me = resources.get_leaderboard(self.db_connection, request)
         leaderboard_response = leaderboard_pb2.LeaderBoardResponse()
         if next_page is None:
-            # return leaderboard_response.metadata  # defaults values means error page
-            rich_status = create_page_error_status(request.name)
+            rich_status = create_invalid_argument_error_status('page')
             context.abort_with_status(rpc_status.to_status(rich_status))
         else:
             leaderboard_response.next_page = next_page
