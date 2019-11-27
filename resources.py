@@ -23,7 +23,7 @@ def hash_password(password):
 def db_connection():
     db = redis.Redis()
     db.set(f'LOGIN_{config.DEMO_LOGIN}', hash_password(config.DEMO_PASSWORD))  # store passwords
-    db.zrem(config.REDIS_LEADERBOARD, 'kiki', 'sava', 'tuta')  # clear score list
+    db.zrem(config.REDIS_LEADERBOARD, 'kiki', 'sava', 'tuta', 'chupa')  # clear score list
     return db
 
 
@@ -42,10 +42,10 @@ def db_get_token(db, request):
 
 def db_save_player_score(db, player_score):
     current_score = db.zscore(config.REDIS_LEADERBOARD, player_score.name)
-    logger.info('player: %s old_score: %s new_score: %s' % (player_score.name, current_score, player_score.score))
+    logger.info('player: %s old: %s new: %s' % (player_score.name, current_score, player_score.score))
     if not current_score or player_score.score > int(current_score):
         db.zadd(config.REDIS_LEADERBOARD, {player_score.name: player_score.score})
-    rank = db.zrevrank(config.REDIS_LEADERBOARD, player_score.name)
+    rank = db.zrevrank(config.REDIS_LEADERBOARD, player_score.name) + 1
     return leaderboard_pb2.ScoreResponse(name=player_score.name, rank=rank)
 
 
@@ -53,6 +53,7 @@ def get_leaderboard(db, get_lb):
     page = get_lb.page - 1 if get_lb.page > 0 else 0
     name = get_lb.name
     leaderboard_length = 0
+    next_page = get_lb.page + 1
 
     start_rank = page * config.LEADERBOARD_PAGE_SIZE
     last_rank = start_rank + config.LEADERBOARD_PAGE_SIZE
@@ -60,6 +61,10 @@ def get_leaderboard(db, get_lb):
         config.REDIS_LEADERBOARD,
         start_rank, last_rank,
         withscores=True,
-        score_cast_func=int)
-
-    return 0, [], []
+        score_cast_func=int
+    )
+    leaderboard_page = [
+        leaderboard_pb2.LeaderBoardRecord(name=name, score=score, rank=rank)
+        for (name, score), rank in zip(page_content, range(start_rank+1, last_rank+1, 1))
+    ]
+    return next_page, leaderboard_page, []

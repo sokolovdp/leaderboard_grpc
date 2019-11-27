@@ -81,7 +81,10 @@ def run():
         except grpc.RpcError as e:
             resources.logger.error('gRPC error: %s' % str(e))
 
-        get_leaderboard_page(stub)
+        result = get_leaderboard_page(stub)
+        print(result.next_page)
+        print(result.results)
+        print(result.around_me)
 
 
 if __name__ == '__main__':
