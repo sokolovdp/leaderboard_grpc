@@ -51,6 +51,9 @@ def db_save_player_score(db, player_score):
 
 def get_leaderboard(db, get_lb):
     leaderboard_count = db.zcount(config.REDIS_LEADERBOARD, '-inf', '+inf')
+    max_page = (leaderboard_count + config.LEADERBOARD_PAGE_SIZE - 1) // config.LEADERBOARD_PAGE_SIZE
+    if get_lb.page > max_page:
+        return None, None, None
     page = get_lb.page - 1 if get_lb.page > 0 else 0  # pages numerated from 1
     start_rank = page * config.LEADERBOARD_PAGE_SIZE
     last_rank = start_rank + config.LEADERBOARD_PAGE_SIZE

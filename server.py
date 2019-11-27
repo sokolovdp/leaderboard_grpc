@@ -30,6 +30,8 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
     def GetLeaderBoardPages(self, request, context):
         next_page, results, around_me = resources.get_leaderboard(self.db_connection, request)
         leaderboard_response = leaderboard_pb2.LeaderBoardResponse()
+        if next_page is None:
+            return leaderboard_response  # defaults values means error page
         leaderboard_response.next_page = next_page
         leaderboard_response.results.extend(results)
         leaderboard_response.around_me.extend(around_me)

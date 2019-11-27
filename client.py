@@ -38,7 +38,7 @@ def send_player_scores(stub):
     try:
         player_ranks = stub.RecordPlayerScore(score_iterator, metadata=[token_metadata])
     except Exception as e:
-        print(str(e))
+        resources.logger.info('send player score error: %s' % str(e))
         return []
     else:
         return player_ranks
@@ -53,7 +53,7 @@ def get_leaderboard_page(stub):
         # get_lb.name = ''
         leaderboard_response = stub.GetLeaderBoardPages(get_lb, metadata=[token_metadata])
     except Exception as e:
-        print(str(e))
+        resources.logger.info('get leader board error: %s' % str(e))
         return None
     else:
         return leaderboard_response
