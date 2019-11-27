@@ -65,5 +65,7 @@ def get_leaderboard(db, get_lb):
         leaderboard_pb2.LeaderBoardRecord(name=name, score=score, rank=rank)
         for (name, score), rank in zip(page_content, range(start_rank+1, last_rank+1, 1))
     ]
-    name = get_lb.name
-    return next_page, leaderboard_page, []
+    around_me_data = []
+    if get_lb.name:
+        pass
+    return next_page, leaderboard_page, around_me_data
