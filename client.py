@@ -49,7 +49,7 @@ def get_leaderboard_page(stub):
 
     try:
         get_lb = leaderboard_pb2.GetLB()
-        get_lb.page = 1
+        get_lb.page = 5
         # get_lb.name = ''
         leaderboard_response = stub.GetLeaderBoardPages(get_lb, metadata=[token_metadata])
     except Exception as e:

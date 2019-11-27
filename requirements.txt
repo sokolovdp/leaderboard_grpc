@@ -1,3 +1,5 @@
 redis
 grpcio
 grpcio-tools
+grpcio-status>=1.18.0
+googleapis-common-protos>=1.5.5

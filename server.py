@@ -1,6 +1,9 @@
 from concurrent import futures
 
 import grpc
+from grpc_status import rpc_status
+from google.protobuf import any_pb2
+from google.rpc import code_pb2, status_pb2, error_details_pb2
 
 from proto import leaderboard_pb2
 from proto import leaderboard_pb2_grpc
@@ -9,6 +12,25 @@ import resources
 import config
 
 token_validator = None
+
+
+def create_page_error_status(page):
+    detail = any_pb2.Any()
+    detail.Pack(
+        error_details_pb2.QuotaFailure(
+            violations=[
+                error_details_pb2.QuotaFailure.Violation(
+                    subject="page: %s" % page,
+                    description="Received invalid page number",
+                )
+            ],
+        )
+    )
+    return status_pb2.Status(
+        code=code_pb2.INVALID_ARGUMENT,
+        message='Page number exceeds maximum',
+        details=[detail],
+    )
 
 
 class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
@@ -31,10 +53,13 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
         next_page, results, around_me = resources.get_leaderboard(self.db_connection, request)
         leaderboard_response = leaderboard_pb2.LeaderBoardResponse()
         if next_page is None:
-            return leaderboard_response  # defaults values means error page
-        leaderboard_response.next_page = next_page
-        leaderboard_response.results.extend(results)
-        leaderboard_response.around_me.extend(around_me)
+            # return leaderboard_response.metadata  # defaults values means error page
+            rich_status = create_page_error_status(request.name)
+            context.abort_with_status(rpc_status.to_status(rich_status))
+        else:
+            leaderboard_response.next_page = next_page
+            leaderboard_response.results.extend(results)
+            leaderboard_response.around_me.extend(around_me)
         return leaderboard_response
 
 
@@ -83,7 +108,7 @@ def serve():
 
     server = grpc.server(futures.ThreadPoolExecutor(
         max_workers=config.MAX_WORKERS),
-        interceptors=(token_validator, )
+        interceptors=(token_validator,)
     )
     leaderboard_pb2_grpc.add_LeaderBoardServicer_to_server(LeaderBoardServicer(), server)
     server.add_insecure_port(config.SERVER_PORT)
