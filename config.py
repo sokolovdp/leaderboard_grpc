@@ -15,3 +15,6 @@ PASSWORD_SALT = os.getenv('PASSWORD_HASH', 'quick fox jumps over the lazy dog')
 
 DEMO_LOGIN = os.getenv('DEMO_LOGIN', 'zz_top')
 DEMO_PASSWORD = os.getenv('DEMO_PASSWORD', 'zz_top')
+
+LEADERBOARD_PAGE_SIZE = os.getenv('LEADERBOARD_PAGE_SIZE', 3)
+

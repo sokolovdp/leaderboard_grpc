@@ -14,6 +14,7 @@ dummy_scores = [
     ('tuta', 12),
     ('sava', 50),
     ('kiki', 70),
+    ('chupa', 65),
 ]
 token_metadata = None
 
@@ -32,6 +33,7 @@ def score_generator():
 
 def send_player_scores(stub):
     global token_metadata
+
     score_iterator = score_generator()
     try:
         player_ranks = stub.RecordPlayerScore(score_iterator, metadata=[token_metadata])
@@ -40,6 +42,21 @@ def send_player_scores(stub):
         return []
     else:
         return player_ranks
+
+
+def get_leaderboard_page(stub):
+    global token_metadata
+
+    try:
+        get_lb = leaderboard_pb2.GetLB()
+        get_lb.page = 1
+        # get_lb.name = ''
+        leaderboard_response = stub.GetLeaderBoardPages(get_lb, metadata=[token_metadata])
+    except Exception as e:
+        print(str(e))
+        return None
+    else:
+        return leaderboard_response
 
 
 def run():
@@ -64,9 +81,7 @@ def run():
         except grpc.RpcError as e:
             resources.logger.error('gRPC error: %s' % str(e))
 
-        #
-        # print("-------------- Get Leader Board --------------")
-        # guide_record_route(stub)
+        get_leaderboard_page(stub)
 
 
 if __name__ == '__main__':

@@ -27,7 +27,7 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
         for player_score in request_iterator:
             yield resources.db_save_player_score(self.db_connection, player_score)
 
-    def GetLeaderBoard(self, request, context):
+    def GetLeaderBoardPages(self, request, context):
         next_page, results, around_me = resources.get_leaderboard(self.db_connection, request)
         leaderboard_response = leaderboard_pb2.LeaderBoardResponse()
         leaderboard_response.next_page = next_page

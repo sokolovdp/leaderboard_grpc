@@ -45,9 +45,21 @@ def db_save_player_score(db, player_score):
     logger.info('player: %s old_score: %s new_score: %s' % (player_score.name, current_score, player_score.score))
     if not current_score or player_score.score > int(current_score):
         db.zadd(config.REDIS_LEADERBOARD, {player_score.name: player_score.score})
-    rank = db.zrevrank(config.REDIS_LEADERBOARD, player_score.name) + 1
+    rank = db.zrevrank(config.REDIS_LEADERBOARD, player_score.name)
     return leaderboard_pb2.ScoreResponse(name=player_score.name, rank=rank)
 
 
 def get_leaderboard(db, get_lb):
-    return 0, None, None
+    page = get_lb.page - 1 if get_lb.page > 0 else 0
+    name = get_lb.name
+    leaderboard_length = 0
+
+    start_rank = page * config.LEADERBOARD_PAGE_SIZE
+    last_rank = start_rank + config.LEADERBOARD_PAGE_SIZE
+    page_content = db.zrevrange(
+        config.REDIS_LEADERBOARD,
+        start_rank, last_rank,
+        withscores=True,
+        score_cast_func=int)
+
+    return 0, [], []

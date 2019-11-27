@@ -24,8 +24,8 @@ class LeaderBoardStub(object):
         request_serializer=leaderboard__pb2.PlayerScore.SerializeToString,
         response_deserializer=leaderboard__pb2.ScoreResponse.FromString,
         )
-    self.GetLeaderBoard = channel.unary_unary(
-        '/leaderboard.LeaderBoard/GetLeaderBoard',
+    self.GetLeaderBoardPages = channel.unary_unary(
+        '/leaderboard.LeaderBoard/GetLeaderBoardPages',
         request_serializer=leaderboard__pb2.GetLB.SerializeToString,
         response_deserializer=leaderboard__pb2.LeaderBoardResponse.FromString,
         )
@@ -49,7 +49,7 @@ class LeaderBoardServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
-  def GetLeaderBoard(self, request, context):
+  def GetLeaderBoardPages(self, request, context):
     # missing associated documentation comment in .proto file
     pass
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -69,8 +69,8 @@ def add_LeaderBoardServicer_to_server(servicer, server):
           request_deserializer=leaderboard__pb2.PlayerScore.FromString,
           response_serializer=leaderboard__pb2.ScoreResponse.SerializeToString,
       ),
-      'GetLeaderBoard': grpc.unary_unary_rpc_method_handler(
-          servicer.GetLeaderBoard,
+      'GetLeaderBoardPages': grpc.unary_unary_rpc_method_handler(
+          servicer.GetLeaderBoardPages,
           request_deserializer=leaderboard__pb2.GetLB.FromString,
           response_serializer=leaderboard__pb2.LeaderBoardResponse.SerializeToString,
       ),

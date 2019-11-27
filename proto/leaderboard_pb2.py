@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='leaderboard',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x11leaderboard.proto\x12\x0bleaderboard\" \n\x10\x42\x61sicCredentials\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\"\x1a\n\tTokenAuth\x12\r\n\x05token\x18\x01 \x01(\t\"*\n\x0bPlayerScore\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\r\"+\n\rScoreResponse\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0c\n\x04rank\x18\x02 \x01(\r\"#\n\x05GetLB\x12\x0c\n\x04page\x18\x01 \x01(\r\x12\x0c\n\x04name\x18\x02 \x01(\t\">\n\x11LeaderBoardRecord\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\r\x12\x0c\n\x04rank\x18\x03 \x01(\r\"\x8c\x01\n\x13LeaderBoardResponse\x12/\n\x07results\x18\x01 \x03(\x0b\x32\x1e.leaderboard.LeaderBoardRecord\x12\x31\n\taround_me\x18\x02 \x03(\x0b\x32\x1e.leaderboard.LeaderBoardRecord\x12\x11\n\tnext_page\x18\x03 \x01(\r2\xf5\x01\n\x0bLeaderBoard\x12K\n\x10\x41uthenticateUser\x12\x1d.leaderboard.BasicCredentials\x1a\x16.leaderboard.TokenAuth\"\x00\x12O\n\x11RecordPlayerScore\x12\x18.leaderboard.PlayerScore\x1a\x1a.leaderboard.ScoreResponse\"\x00(\x01\x30\x01\x12H\n\x0eGetLeaderBoard\x12\x12.leaderboard.GetLB\x1a .leaderboard.LeaderBoardResponse\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x11leaderboard.proto\x12\x0bleaderboard\" \n\x10\x42\x61sicCredentials\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\"\x1a\n\tTokenAuth\x12\r\n\x05token\x18\x01 \x01(\t\"*\n\x0bPlayerScore\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\r\"+\n\rScoreResponse\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0c\n\x04rank\x18\x02 \x01(\r\"#\n\x05GetLB\x12\x0c\n\x04page\x18\x01 \x01(\r\x12\x0c\n\x04name\x18\x02 \x01(\t\">\n\x11LeaderBoardRecord\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\r\x12\x0c\n\x04rank\x18\x03 \x01(\r\"\x8c\x01\n\x13LeaderBoardResponse\x12/\n\x07results\x18\x01 \x03(\x0b\x32\x1e.leaderboard.LeaderBoardRecord\x12\x31\n\taround_me\x18\x02 \x03(\x0b\x32\x1e.leaderboard.LeaderBoardRecord\x12\x11\n\tnext_page\x18\x03 \x01(\r2\xfa\x01\n\x0bLeaderBoard\x12K\n\x10\x41uthenticateUser\x12\x1d.leaderboard.BasicCredentials\x1a\x16.leaderboard.TokenAuth\"\x00\x12O\n\x11RecordPlayerScore\x12\x18.leaderboard.PlayerScore\x1a\x1a.leaderboard.ScoreResponse\"\x00(\x01\x30\x01\x12M\n\x13GetLeaderBoardPages\x12\x12.leaderboard.GetLB\x1a .leaderboard.LeaderBoardResponse\"\x00\x62\x06proto3')
 )
 
 
@@ -360,7 +360,7 @@ _LEADERBOARD = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   serialized_start=430,
-  serialized_end=675,
+  serialized_end=680,
   methods=[
   _descriptor.MethodDescriptor(
     name='AuthenticateUser',
@@ -381,8 +381,8 @@ _LEADERBOARD = _descriptor.ServiceDescriptor(
     serialized_options=None,
   ),
   _descriptor.MethodDescriptor(
-    name='GetLeaderBoard',
-    full_name='leaderboard.LeaderBoard.GetLeaderBoard',
+    name='GetLeaderBoardPages',
+    full_name='leaderboard.LeaderBoard.GetLeaderBoardPages',
     index=2,
     containing_service=None,
     input_type=_GETLB,

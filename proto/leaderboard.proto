@@ -2,14 +2,6 @@ syntax = "proto3";
 
 package leaderboard;
 
-service LeaderBoard { // Interface exported by the server.
-  rpc AuthenticateUser (BasicCredentials) returns (TokenAuth) {}
-
-  rpc RecordPlayerScore (stream PlayerScore) returns (stream ScoreResponse) {}
-
-  rpc GetLeaderBoard (GetLB) returns (LeaderBoardResponse) {}
-}
-
 message BasicCredentials {
     string data = 1;
 }
@@ -43,4 +35,13 @@ message LeaderBoardResponse {
     repeated LeaderBoardRecord results = 1;
     repeated LeaderBoardRecord around_me = 2;
     uint32 next_page = 3;
+}
+
+
+service LeaderBoard { // Interface exported by the server.
+  rpc AuthenticateUser (BasicCredentials) returns (TokenAuth) {}
+
+  rpc RecordPlayerScore (stream PlayerScore) returns (stream ScoreResponse) {}
+
+  rpc GetLeaderBoardPages (GetLB) returns (LeaderBoardResponse) {}
 }
