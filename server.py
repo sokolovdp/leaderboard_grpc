@@ -45,14 +45,14 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
         return leaderboard_response
 
 
-def _unary_unary_rpc_terminator(code, details):
+def unary_unary_rpc_terminator(code, details):
     def terminate(ignored_request, context):
         context.abort(code, details)
 
     return grpc.unary_unary_rpc_method_handler(terminate)
 
 
-def _stream_stream_rpc_terminator(code, details):
+def stream_stream_rpc_terminator(code, details):
     def terminate(ignored_request, context):
         context.abort(code, details)
 
@@ -78,9 +78,9 @@ class AuthTokenValidatorInterceptor(grpc.ServerInterceptor):
         elif (self._header, self._value) in meta_data:
             return continuation(handler_call_details)
         elif method == LeaderBoardServicer.RecordPlayerScore.__name__:
-            return _stream_stream_rpc_terminator(self.code, self.details)
+            return stream_stream_rpc_terminator(self.code, self.details)
         else:
-            return _unary_unary_rpc_terminator(self.code, self.details)
+            return unary_unary_rpc_terminator(self.code, self.details)
 
 
 def serve():
