@@ -68,7 +68,6 @@ def get_leaderboard_page(stub, token_metadata):
 
 
 def run():
-
     with grpc.insecure_channel(config.SERVER_PORT) as channel:
         stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
         login = config.DEMO_LOGIN
