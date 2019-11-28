@@ -5,7 +5,7 @@ import leaderboard_pb2 as leaderboard__pb2
 
 
 class LeaderBoardStub(object):
-  """Interface exported by the server.
+  """LeaderBoard Server and Client interfaces
   """
 
   def __init__(self, channel):
@@ -32,7 +32,7 @@ class LeaderBoardStub(object):
 
 
 class LeaderBoardServicer(object):
-  """Interface exported by the server.
+  """LeaderBoard Server and Client interfaces
   """
 
   def AuthenticateUser(self, request, context):

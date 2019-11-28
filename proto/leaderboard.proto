@@ -44,13 +44,8 @@ message LeaderBoardResponse {
 }
 
 
-service LeaderBoard { // Interface exported by the server.
-                      rpc AuthenticateUser (BasicCredentials) returns (TokenAuth) {
-                      }
-
-                      rpc RecordPlayerScore (stream PlayerScore) returns (stream ScoreResponse) {
-                      }
-
-                      rpc GetLeaderBoardPages (GetLeaderBoard) returns (LeaderBoardResponse) {
-                      }
+service LeaderBoard { // LeaderBoard Server and Client interfaces
+    rpc AuthenticateUser (BasicCredentials) returns (TokenAuth) {}
+    rpc RecordPlayerScore (stream PlayerScore) returns (stream ScoreResponse) {}
+    rpc GetLeaderBoardPages (GetLeaderBoard) returns (LeaderBoardResponse) {}
 }
