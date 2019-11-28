@@ -33,10 +33,12 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
             yield resources.db_save_player_score(self.db_connection, player_score)
 
     def GetLeaderBoardPages(self, request, context):
-        next_page, results, around_me = resources.get_leaderboard(self.db_connection, request)
         leaderboard_response = leaderboard_pb2.LeaderBoardResponse()
-        if next_page is None:
-            err_status = create_invalid_argument_error_status('page')
+        try:
+            next_page, results, around_me = resources.get_leaderboard(self.db_connection, request)
+        except ValueError as error:
+            argument_name = error.args[0]
+            err_status = create_invalid_argument_error_status(argument_name)
             context.abort_with_status(rpc_status.to_status(err_status))
         else:
             leaderboard_response.next_page = next_page

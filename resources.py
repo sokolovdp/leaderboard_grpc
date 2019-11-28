@@ -41,24 +41,30 @@ def db_get_token(db, request):
         return leaderboard_pb2.TokenAuth(token='')
 
 
-def db_save_player_score(db, player_score):
-    current_score = db.zscore(config.REDIS_LEADERBOARD, player_score.name)
-    logger.info('player: %s old: %s new: %s' % (player_score.name, current_score, player_score.score))
-    if not current_score or player_score.score > int(current_score):
-        db.zadd(config.REDIS_LEADERBOARD, {player_score.name: player_score.score})
-    rank = db.zrevrank(config.REDIS_LEADERBOARD, player_score.name) + 1
-    return leaderboard_pb2.ScoreResponse(name=player_score.name, rank=rank)
+def db_save_player_score(db, request):
+    current_score = db.zscore(config.REDIS_LEADERBOARD, request.name)
+    logger.info('player: %s old: %s new: %s' % (request.name, current_score, request.score))
+    if not current_score or request.score > int(current_score):
+        db.zadd(config.REDIS_LEADERBOARD, {request.name: request.score})
+    rank = db.zrevrank(config.REDIS_LEADERBOARD, request.name) + 1
+    return leaderboard_pb2.ScoreResponse(name=request.name, rank=rank)
 
 
-def get_leaderboard(db, get_lb):
+def player_in_leaderboard(leaderboard: list, name: str) -> bool:
+    for record in leaderboard:
+        if record.name == name:
+            return True
+    return False
+
+
+def get_leaderboard_page(db, page: int) -> tuple:
     leaderboard_count = db.zcard(config.REDIS_LEADERBOARD)
     max_page = (leaderboard_count + config.LEADERBOARD_PAGE_SIZE - 1) // config.LEADERBOARD_PAGE_SIZE
-    if get_lb.page > max_page:
-        return None, None, None
-    page = get_lb.page - 1 if get_lb.page > 0 else 0  # pages numerated from 1
+    if page > max_page:
+        raise ValueError('page')
     start_rank = page * config.LEADERBOARD_PAGE_SIZE
     last_rank = start_rank + config.LEADERBOARD_PAGE_SIZE
-    next_page = get_lb.page + 1 if last_rank < leaderboard_count else 0
+    next_page = page + 1 if last_rank < leaderboard_count else 0
     page_content = db.zrevrange(
         config.REDIS_LEADERBOARD,
         start_rank, last_rank,
@@ -69,7 +75,19 @@ def get_leaderboard(db, get_lb):
         leaderboard_pb2.LeaderBoardRecord(name=name, score=score, rank=rank)
         for (name, score), rank in zip(page_content, range(start_rank+1, last_rank+1, 1))
     ]
+
+    return leaderboard_page, next_page
+
+
+def get_leaderboard(db, request):
+    leaderboard_page, next_page = get_leaderboard_page(db, request.page)
     around_me_data = []
-    if get_lb.name:
-        pass
+    if request.name and not player_in_leaderboard(leaderboard_page, request.name):
+        player_rank = db.zrevrank(config.REDIS_LEADERBOARD, request.name)
+        if not player_rank:
+            raise ValueError('name')
+        player_page = (player_rank + config.LEADERBOARD_PAGE_SIZE - 1) // config.LEADERBOARD_PAGE_SIZE
+        around_me_data, _ = get_leaderboard_page(db, player_page)
+
+
     return next_page, leaderboard_page, around_me_data

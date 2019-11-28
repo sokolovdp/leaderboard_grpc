@@ -53,13 +53,15 @@ def send_player_scores(stub, token_metadata):
 def get_leaderboard_page(stub, token_metadata):
     try:
         get_lb = leaderboard_pb2.GetLeaderBoard()
-        get_lb.page = 1
-        # get_lb.name = ''
+        get_lb.page = 0
+        get_lb.name = 'tuta'
         leaderboard_response = stub.GetLeaderBoardPages(get_lb, metadata=[token_metadata])
     except grpc.RpcError as rpc_error:
         status = rpc_status.from_call(rpc_error)
         if status.code == code_pb2.INVALID_ARGUMENT and status.message == 'page':
-            resources.logger.error('invalid page number error')
+            resources.logger.error('page value exceeds max possible value')
+        elif status.code == code_pb2.INVALID_ARGUMENT and status.message == 'name':
+            resources.logger.error('player with such a name does not exist')
         else:
             resources.logger.error('unexpected gRPC error: %s' % str(rpc_error))
         return None
