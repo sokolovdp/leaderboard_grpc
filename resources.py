@@ -1,6 +1,7 @@
 import hashlib
 import logging
 from base64 import b64decode
+from datetime import datetime
 
 import redis
 
@@ -16,6 +17,11 @@ logging.basicConfig(
 logger = logging.getLogger('leaderboard')
 
 
+def initialize_database(db):
+    db.set(f'LOGIN_{config.DEMO_LOGIN}', hash_password(config.DEMO_PASSWORD))  # store passwords
+    db.zrem(config.REDIS_LEADERBOARD, 'kiki', 'sava', 'tuta', 'chupa')  # clear score list
+
+
 def hash_password(password):
     salted = password + config.PASSWORD_SALT
     return hashlib.sha512(salted.encode("utf8")).hexdigest()
@@ -23,8 +29,7 @@ def hash_password(password):
 
 def db_connection():
     db = redis.Redis()
-    db.set(f'LOGIN_{config.DEMO_LOGIN}', hash_password(config.DEMO_PASSWORD))  # store passwords
-    db.zrem(config.REDIS_LEADERBOARD, 'kiki', 'sava', 'tuta', 'chupa')  # clear score list
+    initialize_database(db)
     return db
 
 
@@ -46,6 +51,8 @@ def db_save_player_score(db, request):
     logger.info('player: %s old: %s new: %s' % (request.name, current_score, request.score))
     if not current_score or request.score > int(current_score):
         db.zadd(config.REDIS_LEADERBOARD, {request.name: request.score})
+    timestamp = datetime.timestamp(datetime.now())
+    db.zadd(config.REDIS_TIMESTAMPS, {request.name: timestamp})
     rank = db.zrevrank(config.REDIS_LEADERBOARD, request.name) + 1
     return leaderboard_pb2.ScoreResponse(name=request.name, rank=rank)
 
@@ -85,7 +92,7 @@ def get_leaderboard_page(db, page: int) -> tuple:
 
 
 def db_get_leaderboard_data(db, request):
-    if request.option == leaderboard_pb2.GetLeaderBoard.STANDARD:
+    if request.option == leaderboard_pb2.GetLeaderBoard.ALL_TIME:
         leaderboard_page, next_page = get_leaderboard_page(db, request.page)
         around_me_data = []
         if request.name and not player_in_leaderboard(leaderboard_page, request.name):
@@ -95,11 +102,7 @@ def db_get_leaderboard_data(db, request):
             player_page = (player_rank + config.LEADERBOARD_PAGE_SIZE - 1) // config.LEADERBOARD_PAGE_SIZE
             around_me_data, _ = get_leaderboard_page(db, player_page)
         return next_page, leaderboard_page, around_me_data
-    elif request.option == leaderboard_pb2.GetLeaderBoard.ALL_TIME:
-        last_rank = db.zcard(config.REDIS_LEADERBOARD)
-        leaderboard_data = get_db_data(db, 0, last_rank)
-        return 0, leaderboard_data, []
-    else:  # MONTHLY option
-        return 200, [], []
+    # MONTHLY option
+    return 100, [], []
 
 

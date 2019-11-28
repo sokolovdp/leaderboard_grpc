@@ -22,9 +22,8 @@ message ScoreResponse {
 
 message GetLeaderBoard {
     enum Option {
-        STANDARD = 0;  // default value
-        ALL_TIME = 1;
-        MONTHLY = 2;
+        ALL_TIME = 0;
+        THIS_MONTH = 1;
     }
     uint32 page = 1;
     string name = 2;

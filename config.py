@@ -10,6 +10,7 @@ SERVER_PORT = '[::]:50051'
 
 REDIS_HOST = ''
 REDIS_LEADERBOARD = 'leaderboard'
+REDIS_TIMESTAMPS = REDIS_LEADERBOARD + '_timestamps'
 
 PASSWORD_SALT = os.getenv('PASSWORD_HASH', 'quick fox jumps over the lazy dog')
 
