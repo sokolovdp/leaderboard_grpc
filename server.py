@@ -35,7 +35,7 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
     def GetLeaderBoardPages(self, request, context):
         leaderboard_response = leaderboard_pb2.LeaderBoardResponse()
         try:
-            next_page, results, around_me = resources.get_leaderboard(self.db_connection, request)
+            next_page, results, around_me = resources.db_get_leaderboard_data(self.db_connection, request)
         except ValueError as error:
             argument_name = error.args[0] if error.args else 'unknown_value_error'
             err_status = create_invalid_argument_status(argument_name)

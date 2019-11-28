@@ -78,7 +78,7 @@ def get_leaderboard_page(db, page: int) -> tuple:
     return leaderboard_data, next_page
 
 
-def get_leaderboard(db, request):
+def db_get_leaderboard_data(db, request):
     if request.option == leaderboard_pb2.GetLeaderBoard.STANDARD:
         leaderboard_page, next_page = get_leaderboard_page(db, request.page)
         around_me_data = []
