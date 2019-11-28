@@ -10,8 +10,6 @@ from proto import leaderboard_pb2_grpc
 import resources
 import config
 
-token_validator = None
-
 
 def create_invalid_argument_error_status(argument_name):
     return status_pb2.Status(code=code_pb2.INVALID_ARGUMENT, message=argument_name)
@@ -22,11 +20,12 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
 
     def __init__(self):
         self.db_connection = resources.db_connection()
+        self.token_validator = None
 
     def AuthenticateUser(self, request, context):
         auth_token = resources.db_get_token(self.db_connection, request)
         if auth_token.token:  # if it's valid store value in validator
-            token_validator.set_token(auth_token)
+            self.token_validator.set_token(auth_token)
         return auth_token
 
     def RecordPlayerScore(self, request_iterator, context):
@@ -87,13 +86,14 @@ class AuthTokenValidatorInterceptor(grpc.ServerInterceptor):
 def serve():
     global token_validator
 
-    token_validator = AuthTokenValidatorInterceptor()
+    leaderboard_server = LeaderBoardServicer()
+    leaderboard_server.token_validator = AuthTokenValidatorInterceptor()
 
     server = grpc.server(futures.ThreadPoolExecutor(
         max_workers=config.MAX_WORKERS),
-        interceptors=(token_validator,)
+        interceptors=(leaderboard_server.token_validator,)
     )
-    leaderboard_pb2_grpc.add_LeaderBoardServicer_to_server(LeaderBoardServicer(), server)
+    leaderboard_pb2_grpc.add_LeaderBoardServicer_to_server(leaderboard_server, server)
     server.add_insecure_port(config.SERVER_PORT)
     server.start()
     resources.logger.info('leaderboard started at: %s workers: %d' % (config.SERVER_PORT, config.MAX_WORKERS))
