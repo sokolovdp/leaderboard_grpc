@@ -2,7 +2,6 @@ import grpc
 from base64 import b64encode
 
 from grpc_status import rpc_status
-from google.rpc import error_details_pb2
 from google.rpc import code_pb2
 
 from proto import leaderboard_pb2

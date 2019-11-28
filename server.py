@@ -2,8 +2,7 @@ from concurrent import futures
 
 import grpc
 from grpc_status import rpc_status
-from google.protobuf import any_pb2
-from google.rpc import code_pb2, status_pb2, error_details_pb2
+from google.rpc import code_pb2, status_pb2
 
 from proto import leaderboard_pb2
 from proto import leaderboard_pb2_grpc
