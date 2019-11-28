@@ -67,7 +67,8 @@ def get_leaderboard_page(db, page: int) -> tuple:
     next_page = page + 1 if last_rank < leaderboard_count else 0
     page_content = db.zrevrange(
         config.REDIS_LEADERBOARD,
-        start_rank, last_rank,
+        start_rank,
+        last_rank,
         withscores=True,
         score_cast_func=int
     )
@@ -90,7 +91,19 @@ def db_get_leaderboard_data(db, request):
             around_me_data, _ = get_leaderboard_page(db, player_page)
         return next_page, leaderboard_page, around_me_data
     elif request.option == leaderboard_pb2.GetLeaderBoard.ALL_TIME:
-        return 100, [], []
+        last_rank = db.zcard(config.REDIS_LEADERBOARD)
+        db_data = db.zrevrange(
+            config.REDIS_LEADERBOARD,
+            0,
+            -1,
+            withscores=True,
+            score_cast_func=int
+        )
+        leaderboard_data = [
+            leaderboard_pb2.LeaderBoardRecord(name=name, score=score, rank=rank)
+            for (name, score), rank in zip(db_data, range(1, last_rank + 1, 1))
+        ]
+        return 0, leaderboard_data, []
     else:  # MONTHLY option
         return 200, [], []
 
