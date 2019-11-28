@@ -80,14 +80,19 @@ def get_leaderboard_page(db, page: int) -> tuple:
 
 
 def get_leaderboard(db, request):
-    leaderboard_page, next_page = get_leaderboard_page(db, request.page)
-    around_me_data = []
-    if request.name and not player_in_leaderboard(leaderboard_page, request.name):
-        player_rank = db.zrevrank(config.REDIS_LEADERBOARD, request.name)
-        if not player_rank:
-            raise ValueError('name')
-        player_page = (player_rank + config.LEADERBOARD_PAGE_SIZE - 1) // config.LEADERBOARD_PAGE_SIZE
-        around_me_data, _ = get_leaderboard_page(db, player_page)
+    if request.option == leaderboard_pb2.GetLeaderBoard.STANDARD:
+        leaderboard_page, next_page = get_leaderboard_page(db, request.page)
+        around_me_data = []
+        if request.name and not player_in_leaderboard(leaderboard_page, request.name):
+            player_rank = db.zrevrank(config.REDIS_LEADERBOARD, request.name)
+            if not player_rank:
+                raise ValueError('name')
+            player_page = (player_rank + config.LEADERBOARD_PAGE_SIZE - 1) // config.LEADERBOARD_PAGE_SIZE
+            around_me_data, _ = get_leaderboard_page(db, player_page)
+        return next_page, leaderboard_page, around_me_data
+    elif request.option == leaderboard_pb2.GetLeaderBoard.ALL_TIME:
+        return 100, [], []
+    else:  # MONTHLY option
+        return 200, [], []
 
 
-    return next_page, leaderboard_page, around_me_data
