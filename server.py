@@ -11,7 +11,7 @@ import resources
 import config
 
 
-def create_invalid_argument_error_status(argument_name):
+def create_invalid_argument_status(argument_name):
     return status_pb2.Status(code=code_pb2.INVALID_ARGUMENT, message=argument_name)
 
 
@@ -38,7 +38,7 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
             next_page, results, around_me = resources.get_leaderboard(self.db_connection, request)
         except ValueError as error:
             argument_name = error.args[0] if error.args else 'unknown_value_error'
-            err_status = create_invalid_argument_error_status(argument_name)
+            err_status = create_invalid_argument_status(argument_name)
             context.abort_with_status(rpc_status.to_status(err_status))
         else:
             leaderboard_response.next_page = next_page
