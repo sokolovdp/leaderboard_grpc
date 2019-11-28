@@ -1,6 +1,6 @@
-import grpc
 from base64 import b64encode
 
+import grpc
 from grpc_status import rpc_status
 from google.rpc import code_pb2
 

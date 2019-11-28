@@ -5,6 +5,7 @@ from base64 import b64decode
 import redis
 
 from proto import leaderboard_pb2
+
 import config
 
 logging.basicConfig(
