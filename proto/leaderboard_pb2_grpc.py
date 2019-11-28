@@ -26,7 +26,7 @@ class LeaderBoardStub(object):
         )
     self.GetLeaderBoardPages = channel.unary_unary(
         '/leaderboard.LeaderBoard/GetLeaderBoardPages',
-        request_serializer=leaderboard__pb2.GetLB.SerializeToString,
+        request_serializer=leaderboard__pb2.GetLeaderBoard.SerializeToString,
         response_deserializer=leaderboard__pb2.LeaderBoardResponse.FromString,
         )
 
@@ -71,7 +71,7 @@ def add_LeaderBoardServicer_to_server(servicer, server):
       ),
       'GetLeaderBoardPages': grpc.unary_unary_rpc_method_handler(
           servicer.GetLeaderBoardPages,
-          request_deserializer=leaderboard__pb2.GetLB.FromString,
+          request_deserializer=leaderboard__pb2.GetLeaderBoard.FromString,
           response_serializer=leaderboard__pb2.LeaderBoardResponse.SerializeToString,
       ),
   }

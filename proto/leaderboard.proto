@@ -20,9 +20,15 @@ message ScoreResponse {
     uint32 rank = 2;
 }
 
-message GetLB {
+message GetLeaderBoard {
+    enum Option {
+        STANDARD = 0;  // default value
+        ALL_TIME = 1;
+        MONTHLY = 2;
+    }
     uint32 page = 1;
     string name = 2;
+    Option option = 3;
 }
 
 message LeaderBoardRecord {
@@ -39,9 +45,12 @@ message LeaderBoardResponse {
 
 
 service LeaderBoard { // Interface exported by the server.
-  rpc AuthenticateUser (BasicCredentials) returns (TokenAuth) {}
+                      rpc AuthenticateUser (BasicCredentials) returns (TokenAuth) {
+                      }
 
-  rpc RecordPlayerScore (stream PlayerScore) returns (stream ScoreResponse) {}
+                      rpc RecordPlayerScore (stream PlayerScore) returns (stream ScoreResponse) {
+                      }
 
-  rpc GetLeaderBoardPages (GetLB) returns (LeaderBoardResponse) {}
+                      rpc GetLeaderBoardPages (GetLeaderBoard) returns (LeaderBoardResponse) {
+                      }
 }

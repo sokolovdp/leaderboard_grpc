@@ -52,7 +52,7 @@ def send_player_scores(stub, token_metadata):
 
 def get_leaderboard_page(stub, token_metadata):
     try:
-        get_lb = leaderboard_pb2.GetLB()
+        get_lb = leaderboard_pb2.GetLeaderBoard()
         get_lb.page = 1
         # get_lb.name = ''
         leaderboard_response = stub.GetLeaderBoardPages(get_lb, metadata=[token_metadata])
