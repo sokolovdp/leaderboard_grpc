@@ -64,7 +64,7 @@ class AuthTokenValidatorInterceptor(grpc.ServerInterceptor):
     def __init__(self):
         self._header = 'authorization'
         self._value = None
-        self.details = 'Invalid token!'
+        self._details = 'Invalid token!'
 
     def set_token(self, auth_token):
         self._value = f'Bearer {auth_token.token}'
@@ -77,9 +77,9 @@ class AuthTokenValidatorInterceptor(grpc.ServerInterceptor):
         elif (self._header, self._value) in meta_data:
             return continuation(handler_call_details)
         elif method == LeaderBoardServicer.RecordPlayerScore.__name__:
-            return stream_stream_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, self.details)
+            return stream_stream_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, self._details)
         else:
-            return unary_unary_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, self.details)
+            return unary_unary_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, self._details)
 
 
 def serve():
