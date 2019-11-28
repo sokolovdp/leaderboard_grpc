@@ -57,6 +57,21 @@ def player_in_leaderboard(leaderboard: list, name: str) -> bool:
     return False
 
 
+def get_db_data(db, start_rank, last_rank):
+    db_data = db.zrevrange(
+        config.REDIS_LEADERBOARD,
+        start_rank,
+        last_rank,
+        withscores=True,
+        score_cast_func=int
+    )
+    db_data_ranked = [
+        leaderboard_pb2.LeaderBoardRecord(name=name, score=score, rank=rank)
+        for (name, score), rank in zip(db_data, range(start_rank + 1, last_rank + 1, 1))
+    ]
+    return db_data_ranked
+
+
 def get_leaderboard_page(db, page: int) -> tuple:
     leaderboard_count = db.zcard(config.REDIS_LEADERBOARD)
     max_page = (leaderboard_count + config.LEADERBOARD_PAGE_SIZE - 1) // config.LEADERBOARD_PAGE_SIZE
@@ -65,17 +80,7 @@ def get_leaderboard_page(db, page: int) -> tuple:
     start_rank = page * config.LEADERBOARD_PAGE_SIZE
     last_rank = start_rank + config.LEADERBOARD_PAGE_SIZE
     next_page = page + 1 if last_rank < leaderboard_count else 0
-    page_content = db.zrevrange(
-        config.REDIS_LEADERBOARD,
-        start_rank,
-        last_rank,
-        withscores=True,
-        score_cast_func=int
-    )
-    leaderboard_data = [
-        leaderboard_pb2.LeaderBoardRecord(name=name, score=score, rank=rank)
-        for (name, score), rank in zip(page_content, range(start_rank+1, last_rank+1, 1))
-    ]
+    leaderboard_data = get_db_data(db, start_rank, last_rank)
     return leaderboard_data, next_page
 
 
@@ -92,17 +97,7 @@ def db_get_leaderboard_data(db, request):
         return next_page, leaderboard_page, around_me_data
     elif request.option == leaderboard_pb2.GetLeaderBoard.ALL_TIME:
         last_rank = db.zcard(config.REDIS_LEADERBOARD)
-        db_data = db.zrevrange(
-            config.REDIS_LEADERBOARD,
-            0,
-            -1,
-            withscores=True,
-            score_cast_func=int
-        )
-        leaderboard_data = [
-            leaderboard_pb2.LeaderBoardRecord(name=name, score=score, rank=rank)
-            for (name, score), rank in zip(db_data, range(1, last_rank + 1, 1))
-        ]
+        leaderboard_data = get_db_data(db, 0, last_rank)
         return 0, leaderboard_data, []
     else:  # MONTHLY option
         return 200, [], []
