@@ -19,7 +19,6 @@ dummy_scores = [
     ('kiki', 70),
     ('chupa', 65),
 ]
-token_metadata = None
 
 
 def get_auth_token(stub, login, password):
@@ -34,9 +33,7 @@ def score_generator():
         yield leaderboard_pb2.PlayerScore(name=score[0], score=score[1])
 
 
-def send_player_scores(stub):
-    global token_metadata
-
+def send_player_scores(stub, token_metadata):
     score_iterator = score_generator()
     try:
         player_ranks = stub.RecordPlayerScore(score_iterator, metadata=[token_metadata])
@@ -53,9 +50,7 @@ def send_player_scores(stub):
         return player_ranks
 
 
-def get_leaderboard_page(stub):
-    global token_metadata
-
+def get_leaderboard_page(stub, token_metadata):
     try:
         get_lb = leaderboard_pb2.GetLB()
         get_lb.page = 1
@@ -73,7 +68,6 @@ def get_leaderboard_page(stub):
 
 
 def run():
-    global token_metadata
 
     with grpc.insecure_channel(config.SERVER_PORT) as channel:
         stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
@@ -87,12 +81,12 @@ def run():
             resources.logger.info('authorization failed for login: %s' % login)
             return
 
-        player_ranks = send_player_scores(stub)
+        player_ranks = send_player_scores(stub, token_metadata)
 
         for rank in player_ranks:
             resources.logger.info('player %s rank is %d' % (rank.name, rank.rank))
 
-        result = get_leaderboard_page(stub)
+        result = get_leaderboard_page(stub, token_metadata)
         if result:
             print(result.next_page)
             print(result.results)
