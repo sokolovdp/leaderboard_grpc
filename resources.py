@@ -75,7 +75,6 @@ def get_leaderboard_page(db, page: int) -> tuple:
         leaderboard_pb2.LeaderBoardRecord(name=name, score=score, rank=rank)
         for (name, score), rank in zip(page_content, range(start_rank+1, last_rank+1, 1))
     ]
-
     return leaderboard_data, next_page
 
 
