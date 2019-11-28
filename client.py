@@ -3,6 +3,7 @@ from base64 import b64encode
 
 from grpc_status import rpc_status
 from google.rpc import error_details_pb2
+from google.rpc import code_pb2
 
 from proto import leaderboard_pb2
 from proto import leaderboard_pb2_grpc
@@ -40,17 +41,15 @@ def send_player_scores(stub):
     score_iterator = score_generator()
     try:
         player_ranks = stub.RecordPlayerScore(score_iterator, metadata=[token_metadata])
-    except grpc.RpcError as e:
-        resources.logger.error('gRPC error: %s' % str(e))
-        status = rpc_status.from_call(e)
-        for detail in status.details:
-            if detail.Is(error_details_pb2.QuotaFailure.DESCRIPTOR):
-                info = error_details_pb2.QuotaFailure()
-                detail.Unpack(info)
-                resources.logger.error('Quota failure: %s', info)
-            else:
-                raise RuntimeError('Unexpected failure: %s' % detail)
+    except grpc.RpcError as rpc_error:
+        resources.logger.error('gRPC error: %s' % str(rpc_error))
+        status = rpc_status.from_call(rpc_error)
+        if status.code == code_pb2.INVALID_ARGUMENT and status.message == 'page':
+            resources.logger.error('invalid argument error')
+        else:
+            resources.logger.error('unexpected gRPC error: %s' % str(rpc_error))
         return []
+
     else:
         return player_ranks
 
@@ -60,19 +59,15 @@ def get_leaderboard_page(stub):
 
     try:
         get_lb = leaderboard_pb2.GetLB()
-        get_lb.page = 5
+        get_lb.page = 1
         # get_lb.name = ''
         leaderboard_response = stub.GetLeaderBoardPages(get_lb, metadata=[token_metadata])
     except grpc.RpcError as rpc_error:
         status = rpc_status.from_call(rpc_error)
-        resources.logger.error('gRPC error: %s' % str(rpc_error))
-        for detail in status.details:
-            if detail.Is(error_details_pb2.QuotaFailure.DESCRIPTOR):
-                info = error_details_pb2.QuotaFailure()
-                detail.Unpack(info)
-                resources.logger.error('Quota failure: %s', info)
-            else:
-                raise RuntimeError('Unexpected failure: %s' % detail)
+        if status.code == code_pb2.INVALID_ARGUMENT and status.message == 'page':
+            resources.logger.error('invalid page number error')
+        else:
+            resources.logger.error('unexpected gRPC error: %s' % str(rpc_error))
         return None
     else:
         return leaderboard_response

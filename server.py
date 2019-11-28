@@ -15,23 +15,7 @@ token_validator = None
 
 
 def create_invalid_argument_error_status(argument_name):
-    argument = f'{argument_name}'
-    detail = any_pb2.Any()
-    detail.Pack(
-        error_details_pb2.QuotaFailure(
-            violations=[
-                error_details_pb2.QuotaFailure.Violation(
-                    subject=argument,
-                    description="invalid argument value"
-                )
-            ],
-        )
-    )
-    return status_pb2.Status(
-        code=code_pb2.INVALID_ARGUMENT,
-        message=argument,
-        details=[detail],
-    )
+    return status_pb2.Status(code=code_pb2.INVALID_ARGUMENT, message=argument_name)
 
 
 class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
@@ -54,8 +38,8 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
         next_page, results, around_me = resources.get_leaderboard(self.db_connection, request)
         leaderboard_response = leaderboard_pb2.LeaderBoardResponse()
         if next_page is None:
-            rich_status = create_invalid_argument_error_status('page')
-            context.abort_with_status(rpc_status.to_status(rich_status))
+            err_status = create_invalid_argument_error_status('page')
+            context.abort_with_status(rpc_status.to_status(err_status))
         else:
             leaderboard_response.next_page = next_page
             leaderboard_response.results.extend(results)
