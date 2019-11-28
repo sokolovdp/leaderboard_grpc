@@ -84,8 +84,6 @@ class AuthTokenValidatorInterceptor(grpc.ServerInterceptor):
 
 
 def serve():
-    global token_validator
-
     leaderboard_server = LeaderBoardServicer()
     leaderboard_server.token_validator = AuthTokenValidatorInterceptor()
 
