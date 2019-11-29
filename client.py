@@ -53,8 +53,8 @@ def send_player_scores(stub, token_metadata):
 def get_leaderboard_page(stub, token_metadata):
     try:
         get_lb = leaderboard_pb2.GetLeaderBoard()
-        # get_lb.option = leaderboard_pb2.GetLeaderBoard.LAST_30_DAYS
-        get_lb.option = leaderboard_pb2.GetLeaderBoard.ALL_TIME
+        get_lb.option = leaderboard_pb2.GetLeaderBoard.LAST_30_DAYS
+        # get_lb.option = leaderboard_pb2.GetLeaderBoard.ALL_TIME
         get_lb.page = 0
         get_lb.name = 'tuta'
         leaderboard_response = stub.GetLeaderBoardPages(get_lb, metadata=[token_metadata])
