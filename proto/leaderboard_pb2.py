@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='leaderboard',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x11leaderboard.proto\x12\x0bleaderboard\" \n\x10\x42\x61sicCredentials\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\"\x1a\n\tTokenAuth\x12\r\n\x05token\x18\x01 \x01(\t\"*\n\x0bPlayerScore\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\r\"+\n\rScoreResponse\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0c\n\x04rank\x18\x02 \x01(\r\"\x88\x01\n\x0eGetLeaderBoard\x12\x0c\n\x04page\x18\x01 \x01(\r\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x32\n\x06option\x18\x03 \x01(\x0e\x32\".leaderboard.GetLeaderBoard.Option\"&\n\x06Option\x12\x0c\n\x08\x41LL_TIME\x10\x00\x12\x0e\n\nTHIS_MONTH\x10\x01\">\n\x11LeaderBoardRecord\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\r\x12\x0c\n\x04rank\x18\x03 \x01(\r\"\x8c\x01\n\x13LeaderBoardResponse\x12/\n\x07results\x18\x01 \x03(\x0b\x32\x1e.leaderboard.LeaderBoardRecord\x12\x31\n\taround_me\x18\x02 \x03(\x0b\x32\x1e.leaderboard.LeaderBoardRecord\x12\x11\n\tnext_page\x18\x03 \x01(\r2\x83\x02\n\x0bLeaderBoard\x12K\n\x10\x41uthenticateUser\x12\x1d.leaderboard.BasicCredentials\x1a\x16.leaderboard.TokenAuth\"\x00\x12O\n\x11RecordPlayerScore\x12\x18.leaderboard.PlayerScore\x1a\x1a.leaderboard.ScoreResponse\"\x00(\x01\x30\x01\x12V\n\x13GetLeaderBoardPages\x12\x1b.leaderboard.GetLeaderBoard\x1a .leaderboard.LeaderBoardResponse\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x11leaderboard.proto\x12\x0bleaderboard\" \n\x10\x42\x61sicCredentials\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\"\x1a\n\tTokenAuth\x12\r\n\x05token\x18\x01 \x01(\t\"*\n\x0bPlayerScore\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\r\"+\n\rScoreResponse\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0c\n\x04rank\x18\x02 \x01(\r\"\x8a\x01\n\x0eGetLeaderBoard\x12\x0c\n\x04page\x18\x01 \x01(\r\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x32\n\x06option\x18\x03 \x01(\x0e\x32\".leaderboard.GetLeaderBoard.Option\"(\n\x06Option\x12\x0c\n\x08\x41LL_TIME\x10\x00\x12\x10\n\x0cLAST_30_DAYS\x10\x01\">\n\x11LeaderBoardRecord\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\r\x12\x0c\n\x04rank\x18\x03 \x01(\r\"\x8c\x01\n\x13LeaderBoardResponse\x12/\n\x07results\x18\x01 \x03(\x0b\x32\x1e.leaderboard.LeaderBoardRecord\x12\x31\n\taround_me\x18\x02 \x03(\x0b\x32\x1e.leaderboard.LeaderBoardRecord\x12\x11\n\tnext_page\x18\x03 \x01(\r2\x83\x02\n\x0bLeaderBoard\x12K\n\x10\x41uthenticateUser\x12\x1d.leaderboard.BasicCredentials\x1a\x16.leaderboard.TokenAuth\"\x00\x12O\n\x11RecordPlayerScore\x12\x18.leaderboard.PlayerScore\x1a\x1a.leaderboard.ScoreResponse\"\x00(\x01\x30\x01\x12V\n\x13GetLeaderBoardPages\x12\x1b.leaderboard.GetLeaderBoard\x1a .leaderboard.LeaderBoardResponse\"\x00\x62\x06proto3')
 )
 
 
@@ -36,14 +36,14 @@ _GETLEADERBOARD_OPTION = _descriptor.EnumDescriptor(
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='THIS_MONTH', index=1, number=1,
+      name='LAST_30_DAYS', index=1, number=1,
       serialized_options=None,
       type=None),
   ],
   containing_type=None,
   serialized_options=None,
   serialized_start=284,
-  serialized_end=322,
+  serialized_end=324,
 )
 _sym_db.RegisterEnumDescriptor(_GETLEADERBOARD_OPTION)
 
@@ -228,7 +228,7 @@ _GETLEADERBOARD = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=186,
-  serialized_end=322,
+  serialized_end=324,
 )
 
 
@@ -272,8 +272,8 @@ _LEADERBOARDRECORD = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=324,
-  serialized_end=386,
+  serialized_start=326,
+  serialized_end=388,
 )
 
 
@@ -317,8 +317,8 @@ _LEADERBOARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=389,
-  serialized_end=529,
+  serialized_start=391,
+  serialized_end=531,
 )
 
 _GETLEADERBOARD.fields_by_name['option'].enum_type = _GETLEADERBOARD_OPTION
@@ -391,8 +391,8 @@ _LEADERBOARD = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=532,
-  serialized_end=791,
+  serialized_start=534,
+  serialized_end=793,
   methods=[
   _descriptor.MethodDescriptor(
     name='AuthenticateUser',
