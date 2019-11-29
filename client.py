@@ -10,7 +10,7 @@ from proto import leaderboard_pb2_grpc
 import config
 from utils import logger
 
-from flask import Flask
+from flask import Flask, request
 from flask_restful import Resource, Api
 
 app = Flask(__name__)
@@ -18,9 +18,6 @@ app.token_metadata = None
 api = Api(app)
 
 dummy_scores = [
-    ('tuta', 12),
-    ('sava', 35),
-    ('kiki', 7),
     ('tuta', 12),
     ('sava', 50),
     ('kiki', 70),
@@ -35,26 +32,46 @@ def get_auth_token(stub, login, password):
     return token_auth.token
 
 
+class Authorization(Resource):
+    def post(self):
+        with grpc.insecure_channel(config.SERVER_PORT) as channel:
+            stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
+            login = config.DEMO_LOGIN
+            password = config.DEMO_PASSWORD
+            token = get_auth_token(stub, login, password)
+            if token:
+                token_metadata = ('authorization', f'Bearer {token}')
+                app.token_metadata = token_metadata
+                logger.info('authorization token received')
+            else:
+                logger.info('authorization failed for login: %s' % login)
+        return {'token': 'ok' if app.token_metadata else 'bad'}
+
+
 def score_generator():
     for score in dummy_scores:
         yield leaderboard_pb2.PlayerScore(name=score[0], score=score[1])
 
 
-def send_player_scores(stub, token_metadata):
-    score_iterator = score_generator()
-    try:
-        player_ranks = stub.RecordPlayerScore(score_iterator, metadata=[token_metadata])
-    except grpc.RpcError as rpc_error:
-        logger.error('gRPC error: %s' % str(rpc_error))
-        status = rpc_status.from_call(rpc_error)
-        if status.code == code_pb2.INVALID_ARGUMENT and status.message == 'page':
-            logger.error('invalid argument error')
+class SetSores(Resource):
+    def post(self):
+        args = request.json
+        score_iterator = score_generator()
+        try:
+            with grpc.insecure_channel(config.SERVER_PORT) as channel:
+                stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
+                player_ranks = stub.RecordPlayerScore(score_iterator, metadata=[app.token_metadata])
+                ranks = [(p.name, p.rank) for p in player_ranks]
+        except grpc.RpcError as rpc_error:
+            logger.error('gRPC error: %s' % str(rpc_error))
+            status = rpc_status.from_call(rpc_error)
+            if status.code == code_pb2.INVALID_ARGUMENT and status.message == 'page':
+                logger.error('invalid argument error')
+            else:
+                logger.error('unexpected gRPC error: %s' % str(rpc_error))
+            return []
         else:
-            logger.error('unexpected gRPC error: %s' % str(rpc_error))
-        return []
-
-    else:
-        return player_ranks
+            return ranks
 
 
 def get_leaderboard_page(stub, token_metadata):
@@ -78,54 +95,10 @@ def get_leaderboard_page(stub, token_metadata):
         return leaderboard_response
 
 
-def run():
-    with grpc.insecure_channel(config.SERVER_PORT) as channel:
-        stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
-        login = config.DEMO_LOGIN
-        password = config.DEMO_PASSWORD
-        token = get_auth_token(stub, login, password)
-        if token:
-            token_metadata = ('authorization', f'Bearer {token}')
-            logger.info('authorization token received')
-        else:
-            logger.info('authorization failed for login: %s' % login)
-            return
-
-        player_ranks = send_player_scores(stub, token_metadata)
-
-        for rank in player_ranks:
-            logger.info('player %s rank is %d' % (rank.name, rank.rank))
-
-        result = get_leaderboard_page(stub, token_metadata)
-        if result:
-            print(result.next_page)
-            print(result.results)
-            print(result.around_me)
-
-
-class Authorization(Resource):
-    def post(self):
-        with grpc.insecure_channel(config.SERVER_PORT) as channel:
-            stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
-            login = config.DEMO_LOGIN
-            password = config.DEMO_PASSWORD
-            token = get_auth_token(stub, login, password)
-            if token:
-                token_metadata = ('authorization', f'Bearer {token}')
-                app.token_metadata = token_metadata
-                logger.info('authorization token received')
-            else:
-                logger.info('authorization failed for login: %s' % login)
-        return {'token': 'ok' if app.token_metadata else 'bad'}
-
-
-class SetSores(Resource):
-    def post(self):
-        return {}
-
-
 class LeaderBoard(Resource):
+
     def get(self):
+        args = request.args
         with grpc.insecure_channel(config.SERVER_PORT) as channel:
             stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
             get_lb = leaderboard_pb2.GetLeaderBoard()
@@ -147,8 +120,5 @@ api.add_resource(Authorization, '/auth')
 api.add_resource(SetSores, '/scores')
 api.add_resource(LeaderBoard, '/leaderboard')
 
-
 if __name__ == '__main__':
     app.run(debug=True)
-
-
