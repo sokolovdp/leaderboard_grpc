@@ -111,11 +111,11 @@ class Authorization(Resource):
             token = get_auth_token(stub, login, password)
             if token:
                 token_metadata = ('authorization', f'Bearer {token}')
-                api.token_metadata = token_metadata
+                app.token_metadata = token_metadata
                 logger.info('authorization token received')
             else:
                 logger.info('authorization failed for login: %s' % login)
-        return {'token': 'ok' if api.token_metadata else 'bad'}
+        return {'token': 'ok' if app.token_metadata else 'bad'}
 
 
 class SetSores(Resource):
@@ -125,13 +125,24 @@ class SetSores(Resource):
 
 class LeaderBoard(Resource):
     def get(self):
-        return {}
+        with grpc.insecure_channel(config.SERVER_PORT) as channel:
+            stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
+            get_lb = leaderboard_pb2.GetLeaderBoard()
+            # get_lb.option = leaderboard_pb2.GetLeaderBoard.LAST_30_DAYS
+            get_lb.page = 0
+            # get_lb.name = 'tuta'
+            leaderboard_response = stub.GetLeaderBoardPages(get_lb, metadata=[app.token_metadata])
+            return {
+                'next_page': leaderboard_response.next_page,
+                'results': str(leaderboard_response.results),
+                'around_me': str(leaderboard_response.around_me)
+            }
 
 
 api.add_resource(Authorization, '/auth')
 api.add_resource(SetSores, '/scores')
 api.add_resource(LeaderBoard, '/leaderboard')
-api.token_metadata = None
+app.token_metadata = None
 
 
 if __name__ == '__main__':
