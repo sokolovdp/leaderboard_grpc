@@ -16,10 +16,12 @@ def update_monthly_table(db):
             db.zrem(config.LEADERBOARD_LAST_30_DAYS, *not_active_players)
             transaction.execute()
         except Exception as e:
-            resources.logger.error('cron job update_monthly_table results in error: %s' % str(e))
-            print('cron job update_monthly_table results in error: %s' % str(e))
+            resources.logger.error('update_monthly_table results in error: %s' % str(e))
             exit(1)
 
 
 if __name__ == '__main__':
+    resources.logger.error('cron job update_monthly_table started')
     update_monthly_table(redis.Redis(host=config.REDIS_HOST))
+    resources.logger.error('cron job update_monthly_table finished')
+
