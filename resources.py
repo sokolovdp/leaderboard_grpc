@@ -22,6 +22,7 @@ def initialize_database(db):
     db.zrem(config.LEADERBOARD_ALL_TIMES, 'kiki', 'sava', 'tuta', 'chupa')  # clear score list
 
 
+
 def hash_password(password):
     salted = password + config.PASSWORD_SALT
     return hashlib.sha512(salted.encode("utf8")).hexdigest()
@@ -46,14 +47,26 @@ def db_get_token(db, request):
         return leaderboard_pb2.TokenAuth(token='')
 
 
-def db_save_player_score(db, request):
-    current_score = db.zscore(config.LEADERBOARD_ALL_TIMES, request.name)
-    logger.info('player: %s old: %s new: %s' % (request.name, current_score, request.score))
+def store_score_in_table(db, table_name, request):
+    current_score = db.zscore(table_name, request.name)
     if not current_score or request.score > int(current_score):
-        db.zadd(config.LEADERBOARD_ALL_TIMES, {request.name: request.score})
-    rank = db.zrevrank(config.LEADERBOARD_ALL_TIMES, request.name) + 1
+        db.zadd(table_name, {request.name: request.score})
+    return current_score
+
+
+def db_save_player_score(db, request):
     timestamp = datetime.timestamp(datetime.now())
-    db.zadd(config.LEADERBOARD_TIMESTAMPS, {request.name: timestamp})
+    with db.pipeline(transaction=True) as transaction:
+        try:
+            current_score = store_score_in_table(db, config.LEADERBOARD_ALL_TIMES, request)
+            _ = store_score_in_table(db, config.LEADERBOARD_LAST_30_DAYS, request)
+            rank = db.zrevrank(config.LEADERBOARD_ALL_TIMES, request.name) + 1
+            db.zadd(config.LEADERBOARD_TIMESTAMPS, {request.name: timestamp})
+            transaction.execute()
+        except Exception as e:
+            raise e
+
+    logger.info('player: %s old: %s new: %s' % (request.name, current_score, request.score))
     return leaderboard_pb2.ScoreResponse(name=request.name, rank=rank)
 
 

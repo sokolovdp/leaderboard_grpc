@@ -11,6 +11,10 @@ import resources
 import config
 
 
+def create_internal_error_status(message):
+    return status_pb2.Status(code=code_pb2.INTERNAL, message=message)
+
+
 def create_invalid_argument_status(argument_name):
     return status_pb2.Status(code=code_pb2.INVALID_ARGUMENT, message=argument_name)
 
@@ -29,8 +33,12 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
         return auth_token
 
     def RecordPlayerScore(self, request_iterator, context):
-        for player_score in request_iterator:
-            yield resources.db_save_player_score(self.db_connection, player_score)
+        try:
+            for player_score in request_iterator:
+                yield resources.db_save_player_score(self.db_connection, player_score)
+        except Exception as error:
+            err_status = create_internal_error_status(str(error))
+            context.abort_with_status(rpc_status.to_status(err_status))
 
     def GetLeaderBoardPages(self, request, context):
         leaderboard_response = leaderboard_pb2.LeaderBoardResponse()
