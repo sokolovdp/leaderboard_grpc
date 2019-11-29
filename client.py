@@ -131,12 +131,15 @@ class LeaderBoard(Resource):
             get_lb = leaderboard_pb2.GetLeaderBoard()
             # get_lb.option = leaderboard_pb2.GetLeaderBoard.LAST_30_DAYS
             get_lb.page = 0
-            # get_lb.name = 'tuta'
+            get_lb.name = 'kiki'
             leaderboard_response = stub.GetLeaderBoardPages(get_lb, metadata=[app.token_metadata])
+
+            results = [(r.name, r.score, r.rank) for r in leaderboard_response.results]
+            around_me = [(a.name, a.score, a.rank) for a in leaderboard_response.around_me]
             return {
                 'next_page': leaderboard_response.next_page,
-                'results': str(leaderboard_response.results),
-                'around_me': str(leaderboard_response.around_me)
+                'results': results,
+                'around_me': around_me
             }
 
 
