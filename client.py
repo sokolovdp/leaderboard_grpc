@@ -10,6 +10,12 @@ from proto import leaderboard_pb2_grpc
 import config
 from utils import logger
 
+from flask import Flask
+from flask_restful import Resource, Api
+
+app = Flask(__name__)
+api = Api(app)
+
 dummy_scores = [
     ('tuta', 12),
     ('sava', 35),
@@ -96,5 +102,39 @@ def run():
             print(result.around_me)
 
 
+class Authorization(Resource):
+    def post(self):
+        with grpc.insecure_channel(config.SERVER_PORT) as channel:
+            stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
+            login = config.DEMO_LOGIN
+            password = config.DEMO_PASSWORD
+            token = get_auth_token(stub, login, password)
+            if token:
+                token_metadata = ('authorization', f'Bearer {token}')
+                api.token_metadata = token_metadata
+                logger.info('authorization token received')
+            else:
+                logger.info('authorization failed for login: %s' % login)
+        return {'token': 'ok' if api.token_metadata else 'bad'}
+
+
+class SetSores(Resource):
+    def post(self):
+        return {}
+
+
+class LeaderBoard(Resource):
+    def get(self):
+        return {}
+
+
+api.add_resource(Authorization, '/auth')
+api.add_resource(SetSores, '/scores')
+api.add_resource(LeaderBoard, '/leaderboard')
+api.token_metadata = None
+
+
 if __name__ == '__main__':
-    run()
+    app.run(debug=True)
+
+
