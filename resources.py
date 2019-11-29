@@ -1,4 +1,3 @@
-import hashlib
 import logging
 from base64 import b64decode
 from datetime import datetime
@@ -8,6 +7,7 @@ import redis
 from proto import leaderboard_pb2
 
 import config
+import utils
 
 logging.basicConfig(
     level=config.LOGGING_LEVEL,
@@ -18,14 +18,9 @@ logger = logging.getLogger('leaderboard')
 
 
 def initialize_database(db):
-    db.set(f'LOGIN_{config.DEMO_LOGIN}', hash_password(config.DEMO_PASSWORD))  # store passwords
-    db.zrem(config.LEADERBOARD_ALL_TIMES, 'kiki', 'sava', 'tuta', 'chupa')  # clear score list
-
-
-
-def hash_password(password):
-    salted = password + config.PASSWORD_SALT
-    return hashlib.sha512(salted.encode("utf8")).hexdigest()
+    if config.DEMO_MODE:
+        import tests
+        tests.preload_test_data(db)
 
 
 def db_connection():
@@ -38,7 +33,7 @@ def db_get_token(db, request):
     decoded_credentials = b64decode(request.data.encode('utf-8')).decode('utf-8')
     login, password = decoded_credentials.split(':')
     check = db.get(f'LOGIN_{login}')
-    if check and hash_password(password) == check.decode('utf-8'):
+    if check and utils.hash_password(password) == check.decode('utf-8'):
         logger.info('login: %s credentials are valid' % login)
         token = "super_secret_token_from_database"
         return leaderboard_pb2.TokenAuth(token=token)
@@ -122,8 +117,3 @@ def db_get_leaderboard_data(db, request):
         return get_leaderboard_from_table(db, config.LEADERBOARD_ALL_TIMES, request)
     else:
         return get_leaderboard_from_table(db, config.LEADERBOARD_LAST_30_DAYS, request)
-
-
-
-
-
