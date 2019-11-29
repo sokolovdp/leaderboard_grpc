@@ -121,8 +121,7 @@ def db_get_leaderboard_data(db, request):
     if request.option == leaderboard_pb2.GetLeaderBoard.ALL_TIME:
         return get_leaderboard_from_table(db, config.LEADERBOARD_ALL_TIMES, request)
     else:
-        return 100, [], []
-        # return get_leaderboard_from_table(db, config.LEADERBOARD_LAST_30_DAYS, request)
+        return get_leaderboard_from_table(db, config.LEADERBOARD_LAST_30_DAYS, request)
 
 
 
