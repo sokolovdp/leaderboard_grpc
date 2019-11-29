@@ -14,6 +14,7 @@ from flask import Flask
 from flask_restful import Resource, Api
 
 app = Flask(__name__)
+app.token_metadata = None
 api = Api(app)
 
 dummy_scores = [
@@ -142,7 +143,6 @@ class LeaderBoard(Resource):
 api.add_resource(Authorization, '/auth')
 api.add_resource(SetSores, '/scores')
 api.add_resource(LeaderBoard, '/leaderboard')
-app.token_metadata = None
 
 
 if __name__ == '__main__':
