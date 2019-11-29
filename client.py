@@ -8,7 +8,7 @@ from proto import leaderboard_pb2
 from proto import leaderboard_pb2_grpc
 
 import config
-import resources
+from utils import logger
 
 dummy_scores = [
     ('tuta', 12),
@@ -38,12 +38,12 @@ def send_player_scores(stub, token_metadata):
     try:
         player_ranks = stub.RecordPlayerScore(score_iterator, metadata=[token_metadata])
     except grpc.RpcError as rpc_error:
-        resources.logger.error('gRPC error: %s' % str(rpc_error))
+        logger.error('gRPC error: %s' % str(rpc_error))
         status = rpc_status.from_call(rpc_error)
         if status.code == code_pb2.INVALID_ARGUMENT and status.message == 'page':
-            resources.logger.error('invalid argument error')
+            logger.error('invalid argument error')
         else:
-            resources.logger.error('unexpected gRPC error: %s' % str(rpc_error))
+            logger.error('unexpected gRPC error: %s' % str(rpc_error))
         return []
 
     else:
@@ -61,11 +61,11 @@ def get_leaderboard_page(stub, token_metadata):
     except grpc.RpcError as rpc_error:
         status = rpc_status.from_call(rpc_error)
         if status.code == code_pb2.INVALID_ARGUMENT and status.message == 'page':
-            resources.logger.error('page value exceeds max possible value')
+            logger.error('page value exceeds max possible value')
         elif status.code == code_pb2.INVALID_ARGUMENT and status.message == 'name':
-            resources.logger.error('player with such a name does not exist')
+            logger.error('player with such a name does not exist')
         else:
-            resources.logger.error('unexpected gRPC error: %s' % str(rpc_error))
+            logger.error('unexpected gRPC error: %s' % str(rpc_error))
         return None
     else:
         return leaderboard_response
@@ -79,15 +79,15 @@ def run():
         token = get_auth_token(stub, login, password)
         if token:
             token_metadata = ('authorization', f'Bearer {token}')
-            resources.logger.info('authorization token received')
+            logger.info('authorization token received')
         else:
-            resources.logger.info('authorization failed for login: %s' % login)
+            logger.info('authorization failed for login: %s' % login)
             return
 
         player_ranks = send_player_scores(stub, token_metadata)
 
         for rank in player_ranks:
-            resources.logger.info('player %s rank is %d' % (rank.name, rank.rank))
+            logger.info('player %s rank is %d' % (rank.name, rank.rank))
 
         result = get_leaderboard_page(stub, token_metadata)
         if result:

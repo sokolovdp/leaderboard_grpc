@@ -1,5 +1,13 @@
 import config
 import hashlib
+import logging
+
+logging.basicConfig(
+    level=config.LOGGING_LEVEL,
+    format=config.LOGGING_FORMAT,
+    datefmt=config.LOGGING_DATE_FORMAT
+)
+logger = logging.getLogger('leaderboard')
 
 
 def hash_password(password):

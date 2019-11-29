@@ -7,8 +7,9 @@ from google.rpc import code_pb2, status_pb2
 from proto import leaderboard_pb2
 from proto import leaderboard_pb2_grpc
 
-import resources
+import database
 import config
+from utils import logger
 
 
 def create_internal_error_status(message):
@@ -23,11 +24,11 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
     """Provides methods that implement functionality of Leader Board server."""
 
     def __init__(self):
-        self.db_connection = resources.db_connection()
+        self.db_connection = database.db_connection()
         self.token_validator = None
 
     def AuthenticateUser(self, request, context):
-        auth_token = resources.db_get_token(self.db_connection, request)
+        auth_token = database.get_token(self.db_connection, request)
         if auth_token.token:  # if it's valid store value in validator
             self.token_validator.set_token(auth_token)
         return auth_token
@@ -35,7 +36,7 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
     def RecordPlayerScore(self, request_iterator, context):
         try:
             for player_score in request_iterator:
-                yield resources.db_save_player_score(self.db_connection, player_score)
+                yield database.save_player_score(self.db_connection, player_score)
         except Exception as error:
             err_status = create_internal_error_status(str(error))
             context.abort_with_status(rpc_status.to_status(err_status))
@@ -43,7 +44,7 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
     def GetLeaderBoardPages(self, request, context):
         leaderboard_response = leaderboard_pb2.LeaderBoardResponse()
         try:
-            next_page, results, around_me = resources.db_get_leaderboard_data(self.db_connection, request)
+            next_page, results, around_me = database.get_leaderboard_data(self.db_connection, request)
         except ValueError as error:
             argument_name = error.args[0] if error.args else 'unknown_value_error'
             err_status = create_invalid_argument_status(argument_name)
@@ -103,7 +104,7 @@ def serve():
     leaderboard_pb2_grpc.add_LeaderBoardServicer_to_server(leaderboard_server, server)
     server.add_insecure_port(config.SERVER_PORT)
     server.start()
-    resources.logger.info('leaderboard started at: %s workers: %d' % (config.SERVER_PORT, config.MAX_WORKERS))
+    logger.info('leaderboard started at: %s workers: %d' % (config.SERVER_PORT, config.MAX_WORKERS))
     server.wait_for_termination()
 
 
