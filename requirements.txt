@@ -4,4 +4,4 @@ grpcio-tools
 grpcio-status
 googleapis-common-protos
 flask
-flask-restful
+flask_jwt_extended
