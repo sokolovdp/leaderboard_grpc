@@ -74,8 +74,8 @@ class AuthTokenValidatorInterceptor(grpc.ServerInterceptor):
 
     def __init__(self):
         self._header = 'authorization'
+        self._details = 'invalid token'
         self._value = None
-        self._details = 'Invalid token!'
 
     def set_token(self, auth_token):
         self._value = f'Bearer {auth_token.token}'
