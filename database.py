@@ -23,14 +23,14 @@ def db_connection():
 
 def get_token(db, request):
     decoded_credentials = b64decode(request.data.encode('utf-8')).decode('utf-8')
-    login, password = decoded_credentials.split(':')
-    check = db.get(f'LOGIN_{login}')
+    username, password = decoded_credentials.split(':')
+    check = db.get(f'LOGIN_{username}')
     if check and hash_password(password) == check.decode('utf-8'):
-        logger.info('login: %s credentials are valid' % login)
-        token = "super_secret_token_from_database"
+        logger.info('login: %s credentials are valid' % username)
+        token = "super_secret_token_from_database"  # TODO get from db
         return leaderboard_pb2.TokenAuth(token=token)
     else:
-        logger.info('login: %s credentials are invalid!' % login)
+        logger.info('login: %s credentials are invalid!' % username)
         return leaderboard_pb2.TokenAuth(token='')
 
 

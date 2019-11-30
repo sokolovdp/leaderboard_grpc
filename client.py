@@ -31,7 +31,7 @@ dummy_scores = [
 ]
 
 
-def get_auth_token(stub, username, password):
+def get_auth_token_from_rpc(stub, username, password):
     credentials = leaderboard_pb2.BasicCredentials()
     credentials.data = b64encode(f'{username}:{password}'.encode('utf-8')).decode('utf-8')
     token_auth = stub.AuthenticateUser(credentials)
@@ -44,7 +44,7 @@ def auth():
     password = request.authorization["password"]
     with grpc.insecure_channel(config.SERVER_PORT) as channel:
         stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
-        token = get_auth_token(stub, username, password)
+        token = get_auth_token_from_rpc(stub, username, password)
     if token:
         rpc_token_metadata = ('authorization', f'Bearer {token}')
         app.rpc_token_metadata = rpc_token_metadata
