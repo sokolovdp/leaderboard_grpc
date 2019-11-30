@@ -25,7 +25,7 @@ app.config['JWT_SECRET_KEY'] = 'super-secret'
 jwt = JWTManager(app)
 
 
-def get_auth_token_from_rpc(stub, username, password):
+def get_rpc_auth_token(stub, username, password):
     credentials = leaderboard_pb2.BasicCredentials()
     credentials.data = b64encode(f'{username}:{password}'.encode('utf-8')).decode('utf-8')
     token_auth = stub.AuthenticateUser(credentials)
@@ -38,7 +38,7 @@ def auth():
     password = request.authorization["password"]
     with grpc.insecure_channel(config.SERVER_PORT) as channel:
         stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
-        token = get_auth_token_from_rpc(stub, username, password)
+        token = get_rpc_auth_token(stub, username, password)
     if token:
         rpc_token_metadata = ('authorization', f'Bearer {token}')
         app.rpc_token_metadata = rpc_token_metadata
@@ -72,20 +72,20 @@ def set_scores():
     try:
         verified_scores = verify_scores_format(request.json)
     except TypeError:
-        return jsonify({'error': 'invalid score data format'}), HTTPStatus.BAD_REQUEST
+        return jsonify({'error': 'invalid scores format'}), HTTPStatus.BAD_REQUEST
+
+    score_iterator = score_generator(verified_scores)
+    try:
+        with grpc.insecure_channel(config.SERVER_PORT) as channel:
+            stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
+            player_ranks = stub.RecordPlayerScore(score_iterator, metadata=[app.rpc_token_metadata])
+            ranks = [(p.name, p.rank) for p in player_ranks]
+    except grpc.RpcError as rpc_error:
+        logger.error('gRPC error: %s' % str(rpc_error))
+        status = rpc_status.from_call(rpc_error)
+        return jsonify({'error': status}), HTTPStatus.CONFLICT
     else:
-        score_iterator = score_generator(verified_scores)
-        try:
-            with grpc.insecure_channel(config.SERVER_PORT) as channel:
-                stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
-                player_ranks = stub.RecordPlayerScore(score_iterator, metadata=[app.rpc_token_metadata])
-                ranks = [(p.name, p.rank) for p in player_ranks]
-        except grpc.RpcError as rpc_error:
-            logger.error('gRPC error: %s' % str(rpc_error))
-            status = rpc_status.from_call(rpc_error)
-            return jsonify({'error': status}), HTTPStatus.CONFLICT
-        else:
-            return jsonify(ranks), HTTPStatus.OK
+        return jsonify(ranks), HTTPStatus.OK
 
 
 def get_leaderboard_page(stub, token_metadata):
