@@ -21,7 +21,7 @@ from flask_jwt_extended import (
 
 app = Flask(__name__)
 app.rpc_token_metadata = None
-app.config['JWT_SECRET_KEY'] = 'super-secret'
+app.config['JWT_SECRET_KEY'] = config.FLASK_JWT_SECRET_KEY
 jwt = JWTManager(app)
 
 
@@ -36,7 +36,7 @@ def get_rpc_auth_token(stub, username, password):
 def auth():
     username = request.authorization["username"]
     password = request.authorization["password"]
-    with grpc.insecure_channel(config.SERVER_PORT) as channel:
+    with grpc.insecure_channel(config.GRPC_SERVER_PORT) as channel:
         stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
         token = get_rpc_auth_token(stub, username, password)
     if token:
@@ -76,7 +76,7 @@ def set_scores():
 
     score_iterator = score_generator(verified_scores)
     try:
-        with grpc.insecure_channel(config.SERVER_PORT) as channel:
+        with grpc.insecure_channel(config.GRPC_SERVER_PORT) as channel:
             stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
             player_ranks = stub.RecordPlayerScore(score_iterator, metadata=[app.rpc_token_metadata])
             ranks = [(p.name, p.rank) for p in player_ranks]
@@ -84,51 +84,54 @@ def set_scores():
         logger.error('gRPC error: %s' % str(rpc_error))
         status = rpc_status.from_call(rpc_error)
         return jsonify({'error': status}), HTTPStatus.CONFLICT
+    except Exception as e:
+        return jsonify({'error': str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
     else:
         return jsonify(ranks), HTTPStatus.OK
-
-
-def get_leaderboard_page(stub, token_metadata):
-    try:
-        get_lb = leaderboard_pb2.GetLeaderBoard()
-        get_lb.option = leaderboard_pb2.GetLeaderBoard.LAST_30_DAYS
-        # get_lb.option = leaderboard_pb2.GetLeaderBoard.ALL_TIME
-        get_lb.page = 0
-        get_lb.name = 'tuta'
-        leaderboard_response = stub.GetLeaderBoardPages(get_lb, metadata=[token_metadata])
-    except grpc.RpcError as rpc_error:
-        status = rpc_status.from_call(rpc_error)
-        if status.code == code_pb2.INVALID_ARGUMENT and status.message == 'page':
-            logger.error('page value exceeds max possible value')
-        elif status.code == code_pb2.INVALID_ARGUMENT and status.message == 'name':
-            logger.error('player with such a name does not exist')
-        else:
-            logger.error('unexpected gRPC error: %s' % str(rpc_error))
-        return None
-    else:
-        return leaderboard_response
 
 
 @app.route('/leaderboard', methods=['GET'])
 @jwt_required
 def leaderboard():
-    args = request.args
-    with grpc.insecure_channel(config.SERVER_PORT) as channel:
-        stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
-        get_lb = leaderboard_pb2.GetLeaderBoard()
-        # get_lb.option = leaderboard_pb2.GetLeaderBoard.LAST_30_DAYS
-        get_lb.page = 0
-        get_lb.name = 'kiki'
-        leaderboard_response = stub.GetLeaderBoardPages(get_lb, metadata=[app.rpc_token_metadata])
+    last_30_days = 'last_30_days' in request.args
+    name = request.args.get('name')
+    try:
+        page = int(request.args.get('page'))
+    except ValueError:
+        return jsonify({'error': 'page value must be int'}), HTTPStatus.BAD_REQUEST
 
-        results = [(r.name, r.score, r.rank) for r in leaderboard_response.results]
-        around_me = [(a.name, a.score, a.rank) for a in leaderboard_response.around_me]
-        return {
-            'next_page': leaderboard_response.next_page,
-            'results': results,
-            'around_me': around_me
-            }
+    with grpc.insecure_channel(config.GRPC_SERVER_PORT) as channel:
+        stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
+        rpc_request = leaderboard_pb2.GetLeaderBoard()
+        if last_30_days:
+            rpc_request.option = leaderboard_pb2.GetLeaderBoard.LAST_30_DAYS
+        if page:
+            rpc_request.page = page
+        if name:
+            rpc_request.name = name
+        try:
+            leaderboard_response = stub.GetLeaderBoardPages(rpc_request, metadata=[app.rpc_token_metadata])
+            results = [(r.name, r.score, r.rank) for r in leaderboard_response.results]
+            around_me = [(a.name, a.score, a.rank) for a in leaderboard_response.around_me]
+        except grpc.RpcError as rpc_error:
+            status = rpc_status.from_call(rpc_error)
+            if status.code == code_pb2.INVALID_ARGUMENT and status.message == 'page':
+                error, status = 'page value exceeds max possible value', HTTPStatus.BAD_REQUEST
+            elif status.code == code_pb2.INVALID_ARGUMENT and status.message == 'name':
+                error, status = 'player with such a name does not exist', HTTPStatus.BAD_REQUEST
+            else:
+                error, status = 'unexpected gRPC error: %s' % str(rpc_error), HTTPStatus.INTERNAL_SERVER_ERROR
+            logger.error(error)
+            return jsonify({'error': error}), status
+        except Exception as e:
+            return jsonify({'error': str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
+        else:
+            return jsonify({
+                'next_page': leaderboard_response.next_page,
+                'results': results,
+                'around_me': around_me
+                }), HTTPStatus.OK
 
 
 if __name__ == '__main__':
-    app.run(debug=True)   # host=, port=
+    app.run(host=config.FLASK_HOST, port=config.FLASK_PORT,  debug=config.DEMO_MODE)

@@ -98,13 +98,13 @@ def serve():
     leaderboard_server.token_validator = AuthTokenValidatorInterceptor()
 
     server = grpc.server(futures.ThreadPoolExecutor(
-        max_workers=config.MAX_WORKERS),
+        max_workers=config.GRPC_SERVER_WORKERS),
         interceptors=(leaderboard_server.token_validator,)
     )
     leaderboard_pb2_grpc.add_LeaderBoardServicer_to_server(leaderboard_server, server)
-    server.add_insecure_port(config.SERVER_PORT)
+    server.add_insecure_port(config.GRPC_SERVER_PORT)
     server.start()
-    logger.info('leaderboard started at: %s workers: %d' % (config.SERVER_PORT, config.MAX_WORKERS))
+    logger.info('leaderboard started at: %s workers: %d' % (config.GRPC_SERVER_PORT, config.GRPC_SERVER_WORKERS))
     server.wait_for_termination()
 
 
