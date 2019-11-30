@@ -1,4 +1,5 @@
 from base64 import b64encode
+from http import HTTPStatus
 
 import grpc
 from grpc_status import rpc_status
@@ -23,13 +24,6 @@ app.rpc_token_metadata = None
 app.config['JWT_SECRET_KEY'] = 'super-secret'
 jwt = JWTManager(app)
 
-dummy_scores = [
-    ('tuta', 12),
-    ('sava', 50),
-    ('kiki', 70),
-    ('chupa', 65),
-]
-
 
 def get_auth_token_from_rpc(stub, username, password):
     credentials = leaderboard_pb2.BasicCredentials()
@@ -50,37 +44,48 @@ def auth():
         app.rpc_token_metadata = rpc_token_metadata
         jwt_token = create_access_token(identity=username)
         logger.info('RPC authorization token received, JWT generated')
-        return jsonify({'jwt': jwt_token}), 200
+        return jsonify({'jwt': jwt_token}), HTTPStatus.OK
     else:
-        return jsonify({'error': 'invalid credentials'}), 401
+        return jsonify({'error': 'invalid credentials'}), HTTPStatus.UNAUTHORIZED
 
 
-def score_generator():
-    for score in dummy_scores:
+def verify_scores_format(score_list: list) -> list:
+    if not score_list or not isinstance(score_list, list):
+        raise TypeError
+    verified_scores = []
+    for name, score in score_list:
+        if isinstance(name, str) and isinstance(score, int):
+            verified_scores.append((name, score))
+        else:
+            raise TypeError
+    return verified_scores
+
+
+def score_generator(scores):
+    for score in scores:
         yield leaderboard_pb2.PlayerScore(name=score[0], score=score[1])
 
 
 @app.route('/scores', methods=['POST', 'PUT'])
 @jwt_required
 def set_scores():
-    args = request.json
-    score_iterator = score_generator()
     try:
-        with grpc.insecure_channel(config.SERVER_PORT) as channel:
-            stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
-            player_ranks = stub.RecordPlayerScore(score_iterator, metadata=[app.rpc_token_metadata])
-            ranks = [(p.name, p.rank) for p in player_ranks]
-    except grpc.RpcError as rpc_error:
-        logger.error('gRPC error: %s' % str(rpc_error))
-        status = rpc_status.from_call(rpc_error)
-        if status.code == code_pb2.INVALID_ARGUMENT and status.message == 'page':
-            error = 'invalid argument error'
-        else:
-            error = 'unexpected gRPC error: %s' % str(rpc_error)
-        logger.error(error)
-        return jsonify({'error': error}), 400
+        verified_scores = verify_scores_format(request.json)
+    except TypeError:
+        return jsonify({'error': 'invalid score data format'}), HTTPStatus.BAD_REQUEST
     else:
-        return jsonify(ranks), 200
+        score_iterator = score_generator(verified_scores)
+        try:
+            with grpc.insecure_channel(config.SERVER_PORT) as channel:
+                stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
+                player_ranks = stub.RecordPlayerScore(score_iterator, metadata=[app.rpc_token_metadata])
+                ranks = [(p.name, p.rank) for p in player_ranks]
+        except grpc.RpcError as rpc_error:
+            logger.error('gRPC error: %s' % str(rpc_error))
+            status = rpc_status.from_call(rpc_error)
+            return jsonify({'error': status}), HTTPStatus.CONFLICT
+        else:
+            return jsonify(ranks), HTTPStatus.OK
 
 
 def get_leaderboard_page(stub, token_metadata):
