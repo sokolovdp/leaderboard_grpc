@@ -103,7 +103,7 @@ def serve():
     leaderboard_pb2_grpc.add_LeaderBoardServicer_to_server(leaderboard_server, server)
     server.add_insecure_port(config.GRPC_SERVER_PORT)
     server.start()
-    logger.info('grpc leaderboard server started at port: %s' % config.GRPC_SERVER_PORT)
+    logger.info('gRPC leaderboard server started at port: %s' % config.GRPC_SERVER_PORT)
     server.wait_for_termination()
 
 
