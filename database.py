@@ -82,7 +82,7 @@ def get_db_data(db, table_name, start_rank, last_rank):
 def get_leaderboard_page(db, table_name, page: int) -> tuple:
     leaderboard_count = db.zcard(table_name)
     max_page = (leaderboard_count + config.LEADERBOARD_PAGE_SIZE - 1) // config.LEADERBOARD_PAGE_SIZE
-    if page > max_page:
+    if page >= max_page:
         raise ValueError('page')
     start_rank = page * config.LEADERBOARD_PAGE_SIZE
     last_rank = start_rank + config.LEADERBOARD_PAGE_SIZE

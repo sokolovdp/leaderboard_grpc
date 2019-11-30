@@ -68,7 +68,7 @@ def score_generator(scores):
 
 @app.route('/scores', methods=['POST', 'PUT'])
 @jwt_required
-def set_scores():
+def set_scores():  # TODO META_DATA CHECK
     try:
         verified_scores = verify_scores_format(request.json)
     except TypeError:
@@ -92,11 +92,11 @@ def set_scores():
 
 @app.route('/leaderboard', methods=['GET'])
 @jwt_required
-def leaderboard():
+def leaderboard():  # TODO META_DATA CHECK
     last_30_days = 'last_30_days' in request.args
     name = request.args.get('name')
     try:
-        page = int(request.args.get('page'))
+        page = int(request.args.get('page', 0))
     except ValueError:
         return jsonify({'error': 'page value must be int'}), HTTPStatus.BAD_REQUEST
 
