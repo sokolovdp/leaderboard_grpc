@@ -2,46 +2,55 @@ from base64 import b64decode
 from datetime import datetime
 
 import redis
+from redis import Redis
 
-from proto import leaderboard_pb2
+from proto.leaderboard_pb2 import (
+    BasicCredentials,
+    TokenAuth,
+    PlayerScore,
+    ScoreResponse,
+    LeaderBoardRecord,
+    GetLeaderBoard,
+    LeaderBoardResponse,
+)
 
 import config
 from utils import logger, hash_password
 
 
-def initialize_database(db):
+def initialize_database(db: Redis):
     if config.DEMO_MODE:
         import tests
         tests.preload_test_data(db)
 
 
-def db_connection():
+def db_connection() -> Redis:
     db = redis.Redis(host=config.REDIS_HOST)
     initialize_database(db)
     return db
 
 
-def get_token(db, request):
+def get_token(db: Redis, request: BasicCredentials) -> TokenAuth:
     decoded_credentials = b64decode(request.data.encode('utf-8')).decode('utf-8')
     username, password = decoded_credentials.split(':')
     check = db.get(f'LOGIN_{username}')
     if check and hash_password(password) == check.decode('utf-8'):
         logger.info('login: %s credentials are valid' % username)
         token = "super_secret_token_from_database"  # TODO get from db
-        return leaderboard_pb2.TokenAuth(token=token)
+        return TokenAuth(token=token)
     else:
         logger.info('login: %s credentials are invalid!' % username)
-        return leaderboard_pb2.TokenAuth(token='')
+        return TokenAuth(token='')
 
 
-def store_score_in_table(db, table_name, request):
+def store_score_in_table(db: Redis, table_name: str, request: PlayerScore) -> int:
     current_score = db.zscore(table_name, request.name)
     if not current_score or request.score > int(current_score):
         db.zadd(table_name, {request.name: request.score})
     return current_score
 
 
-def save_player_score(db, request):
+def save_player_score(db: Redis, request: PlayerScore) -> ScoreResponse:
     timestamp = datetime.timestamp(datetime.now())
     with db.pipeline(transaction=True) as transaction:
         try:
@@ -52,19 +61,18 @@ def save_player_score(db, request):
             transaction.execute()
         except Exception as e:
             raise e
-
     logger.info('player: %s old: %s new: %s' % (request.name, current_score, request.score))
-    return leaderboard_pb2.ScoreResponse(name=request.name, rank=rank)
+    return ScoreResponse(name=request.name, rank=rank)
 
 
-def player_in_leaderboard(leaderboard: list, name: str) -> bool:
-    for record in leaderboard:
+def player_score_in_page(name: str, result_page: list) -> bool:
+    for record in result_page:
         if record.name == name:
             return True
     return False
 
 
-def get_db_data(db, table_name, start_rank, last_rank):
+def get_db_data(db: Redis, table_name: str, start_rank: int, last_rank: int) -> list:
     db_data = db.zrevrange(
         table_name,
         start_rank,
@@ -73,39 +81,46 @@ def get_db_data(db, table_name, start_rank, last_rank):
         score_cast_func=int
     )
     db_data_ranked = [
-        leaderboard_pb2.LeaderBoardRecord(name=name, score=score, rank=rank)
+        LeaderBoardRecord(name=name, score=score, rank=rank)
         for (name, score), rank in zip(db_data, range(start_rank + 1, last_rank + 1, 1))
     ]
     return db_data_ranked
 
 
-def get_leaderboard_page(db, table_name, page: int) -> tuple:
-    leaderboard_count = db.zcard(table_name)
-    max_page = (leaderboard_count + config.LEADERBOARD_PAGE_SIZE - 1) // config.LEADERBOARD_PAGE_SIZE
-    if page >= max_page:
-        raise ValueError('page')
+def get_leaderboard_page(db: Redis, table_name: str, page: int) -> list:
     start_rank = page * config.LEADERBOARD_PAGE_SIZE
     last_rank = start_rank + config.LEADERBOARD_PAGE_SIZE
-    next_page = page + 1 if last_rank < leaderboard_count else 0
     leaderboard_data = get_db_data(db, table_name, start_rank, last_rank)
-    return leaderboard_data, next_page
+    return leaderboard_data
 
 
-def get_leaderboard_from_table(db, table_name, request):
-    leaderboard_page, next_page = get_leaderboard_page(db, table_name, request.page)
-    around_me_data = []
+def next_page_calculate(db: Redis, table_name: str, page: int) -> int:
+    max_page = (db.zcard(table_name) + config.LEADERBOARD_PAGE_SIZE - 1) // config.LEADERBOARD_PAGE_SIZE
+    if page >= max_page:
+        raise ValueError('page')
+    return page + 1 % max_page
+
+
+def get_leaderboard_from_table(db: Redis, table_name: str, request: GetLeaderBoard) -> LeaderBoardResponse:
+    next_page = next_page_calculate(db, table_name, request.page)
+    results_page = get_leaderboard_page(db, table_name, request.page)
+    around_me_page = []
     # check if player's name was given, and his result is in resulting page, if not then find its page
-    if request.name and not player_in_leaderboard(leaderboard_page, request.name):
+    if request.name and not player_score_in_page(request.name, results_page):
         player_rank = db.zrevrank(table_name, request.name)
         if not player_rank:
             raise ValueError('name')
         player_page = (player_rank + config.LEADERBOARD_PAGE_SIZE - 1) // config.LEADERBOARD_PAGE_SIZE
-        around_me_data, _ = get_leaderboard_page(db, table_name, player_page)
-    return next_page, leaderboard_page, around_me_data
+        around_me_page = get_leaderboard_page(db, table_name, player_page)
+    leaderboard_response = LeaderBoardResponse()
+    leaderboard_response.next_page = next_page
+    leaderboard_response.results.extend(results_page)
+    leaderboard_response.around_me.extend(around_me_page)
+    return leaderboard_response
 
 
-def get_leaderboard_data(db, request):
-    if request.option == leaderboard_pb2.GetLeaderBoard.ALL_TIME:
+def get_leaderboard_data(db: Redis, request: GetLeaderBoard) -> tuple:
+    if request.option == GetLeaderBoard.ALL_TIME:
         return get_leaderboard_from_table(db, config.LEADERBOARD_ALL_TIMES, request)
     else:
         return get_leaderboard_from_table(db, config.LEADERBOARD_LAST_30_DAYS, request)

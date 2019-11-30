@@ -11,6 +11,10 @@ import database
 import config
 from utils import logger
 
+INVALID_TOKEN = 'invalid rpc token'
+AUTH_HEADER = 'authorization'
+EXCEPTION_ARGS_ERROR = 'unexpected_value_error'
+
 
 def create_internal_error_status(message):
     return status_pb2.Status(code=code_pb2.INTERNAL, message=message)
@@ -42,17 +46,14 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
             context.abort_with_status(rpc_status.to_status(err_status))
 
     def GetLeaderBoardPages(self, request, context):
-        leaderboard_response = leaderboard_pb2.LeaderBoardResponse()
         try:
-            next_page, results, around_me = database.get_leaderboard_data(self.db_connection, request)
+            leaderboard_response = database.get_leaderboard_data(self.db_connection, request)
         except ValueError as error:
-            argument_name = error.args[0] if error.args else 'unknown_value_error'
+            leaderboard_response = leaderboard_pb2.LeaderBoardResponse()
+            argument_name = error.args[0] if error.args else EXCEPTION_ARGS_ERROR
             err_status = create_invalid_argument_status(argument_name)
             context.abort_with_status(rpc_status.to_status(err_status))
-        else:
-            leaderboard_response.next_page = next_page
-            leaderboard_response.results.extend(results)
-            leaderboard_response.around_me.extend(around_me)
+
         return leaderboard_response
 
 
@@ -73,24 +74,22 @@ def stream_stream_rpc_terminator(code, details):
 class AuthTokenValidatorInterceptor(grpc.ServerInterceptor):
 
     def __init__(self):
-        self._header = 'authorization'
-        self._details = 'invalid token'
-        self._value = None
+        self._auth_header_value = None
 
     def set_token(self, auth_token):
-        self._value = f'Bearer {auth_token.token}'
+        self._auth_header_value = f'Bearer {auth_token.token}'
 
     def intercept_service(self, continuation, handler_call_details):
         meta_data = handler_call_details.invocation_metadata
         method = handler_call_details.method.rsplit('/', 1)[-1]
         if method == LeaderBoardServicer.AuthenticateUser.__name__:
             return continuation(handler_call_details)
-        elif (self._header, self._value) in meta_data:
+        elif (AUTH_HEADER, self._auth_header_value) in meta_data:
             return continuation(handler_call_details)
         elif method == LeaderBoardServicer.RecordPlayerScore.__name__:
-            return stream_stream_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, self._details)
+            return stream_stream_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, INVALID_TOKEN)
         else:
-            return unary_unary_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, self._details)
+            return unary_unary_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, INVALID_TOKEN)
 
 
 def serve():
@@ -104,7 +103,7 @@ def serve():
     leaderboard_pb2_grpc.add_LeaderBoardServicer_to_server(leaderboard_server, server)
     server.add_insecure_port(config.GRPC_SERVER_PORT)
     server.start()
-    logger.info('leaderboard started at: %s workers: %d' % (config.GRPC_SERVER_PORT, config.GRPC_SERVER_WORKERS))
+    logger.info('grpc leaderboard server started at port: %s' % config.GRPC_SERVER_PORT)
     server.wait_for_termination()
 
 

@@ -12,12 +12,7 @@ import config
 from utils import logger
 
 from flask import Flask, request, jsonify
-from flask_jwt_extended import (
-    JWTManager,
-    jwt_required,
-    create_access_token,
-    # get_jwt_identity
-)
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token  # get_jwt_identity
 
 app = Flask(__name__)
 app.rpc_token_metadata = None
@@ -130,8 +125,8 @@ def leaderboard():  # TODO META_DATA CHECK
                 'next_page': leaderboard_response.next_page,
                 'results': results,
                 'around_me': around_me
-                }), HTTPStatus.OK
+            }), HTTPStatus.OK
 
 
 if __name__ == '__main__':
-    app.run(host=config.FLASK_HOST, port=config.FLASK_PORT,  debug=config.DEMO_MODE)
+    app.run(host=config.FLASK_HOST, port=config.FLASK_PORT, debug=config.DEMO_MODE)
