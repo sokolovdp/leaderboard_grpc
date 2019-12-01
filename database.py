@@ -25,21 +25,21 @@ def initialize_database(db: Redis):
 
 
 def db_connection() -> Redis:
-    db = redis.Redis(host=config.REDIS_HOST)
+    db = redis.StrictRedis(host=config.REDIS_HOST, port=6379, charset="utf-8", decode_responses=True)
     initialize_database(db)
     return db
 
 
 def get_token(db: Redis, request: BasicCredentials) -> TokenAuth:
-    decoded_credentials = b64decode(request.data.encode('utf-8')).decode('utf-8')
-    username, password = decoded_credentials.split(':')
-    check = db.get(f'LOGIN_{username}')
-    if check and hash_password(password) == check.decode('utf-8'):
-        logger.info('login: %s credentials are valid' % username)
-        token = "super_secret_token_from_database"  # TODO get from db
-        return TokenAuth(token=token)
+    rcvd_credentials = b64decode(request.data.encode('utf-8')).decode('utf-8')
+    username, password = rcvd_credentials.split(':')
+    db_credentials = db.hgetall(f'{config.CLIENT_PREFIX}{username}')
+    if db_credentials and hash_password(password) == db_credentials['password']:
+        logger.info('username: %s credentials are valid' % username)
+        rpc_token = db_credentials['token']
+        return TokenAuth(token=rpc_token)
     else:
-        logger.info('login: %s credentials are invalid!' % username)
+        logger.error('username: %s credentials are invalid!' % username)
         return TokenAuth(token='')
 
 

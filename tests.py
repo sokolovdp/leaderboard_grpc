@@ -5,7 +5,6 @@ import config
 import utils
 import cron_job
 
-
 initial_scores = [
     ('tuta', 1),
     ('sava', 2),
@@ -16,11 +15,15 @@ initial_scores = [
 ]
 
 
-def preload_test_data(db):
-    db.set(f'LOGIN_{config.DEMO_LOGIN}', utils.hash_password(config.DEMO_PASSWORD))  # store demo password
-
-    db.zrem(config.LEADERBOARD_ALL_TIMES, *[i[0] for i in initial_scores])  # clear score list
-    db.zrem(config.LEADERBOARD_LAST_30_DAYS, *[i[0] for i in initial_scores])  # clear score list
+def preload_test_data(db: redis.Redis):
+    db.flushall()  # clear all data
+    db.hmset(
+        name=f'{config.CLIENT_PREFIX}{config.DEMO_LOGIN}',
+        mapping={
+            'password': utils.hash_password(config.DEMO_PASSWORD),
+            'token': utils.hash_password(config.DEMO_LOGIN + config.DEMO_PASSWORD)[:5],  # make it small
+        }
+    )
     for k, v in initial_scores[:4]:
         db.zadd(config.LEADERBOARD_ALL_TIMES, {k: v})
         db.zadd(config.LEADERBOARD_LAST_30_DAYS, {k: v})
