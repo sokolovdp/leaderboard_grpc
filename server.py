@@ -11,7 +11,7 @@ import database
 import config
 from utils import logger
 
-INVALID_TOKEN = 'invalid rpc token'
+INVALID_TOKEN_ERROR = 'invalid rpc token'
 EXCEPTION_ARGS_ERROR = 'unexpected_value_error'
 
 
@@ -86,9 +86,9 @@ class AuthTokenValidatorInterceptor(grpc.ServerInterceptor):
         elif (config.AUTH_HEADER, self._auth_header_value) in meta_data:
             return continuation(handler_call_details)
         elif method == LeaderBoardServicer.RecordPlayerScore.__name__:
-            return stream_stream_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, INVALID_TOKEN)
+            return stream_stream_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, INVALID_TOKEN_ERROR)
         else:
-            return unary_unary_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, INVALID_TOKEN)
+            return unary_unary_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, INVALID_TOKEN_ERROR)
 
 
 def serve():
