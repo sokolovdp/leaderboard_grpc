@@ -23,6 +23,9 @@ jwt = JWTManager(app)
 
 @app.errorhandler(grpc.RpcError)
 def grpc_server_error(rpc_error):
+    """
+    A gRPC errors handler
+    """
     app.rpc_token_metadata = None  # clear meta_data
     logger.error('gRPC error: %s' % str(rpc_error))
     err_name = rpc_error._state.code.name
@@ -33,6 +36,9 @@ def grpc_server_error(rpc_error):
 
 @app.errorhandler(Exception)
 def internal_server_error(error):
+    """
+    A general Flask app errors handler
+    """
     logger.error('flask internal error: %s' % str(error))
     return jsonify({'error': str(error)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
@@ -46,32 +52,28 @@ def rpc_token_required(fn):
         if app.rpc_token_metadata:
             return fn(*args, **kwargs)
         else:
-            raise exceptions.NoAuthorizationError('RPC meta_token error')
+            raise exceptions.NoAuthorizationError('RPC server token error')
     return wrapper
-
-
-def get_rpc_auth_token(stub: LeaderBoardStub, username: str, password: str) -> str:
-    credentials = BasicCredentials()
-    credentials.data = b64encode(f'{username}:{password}'.encode('utf-8')).decode('utf-8')
-    token_auth = stub.AuthenticateUser(credentials)
-    return token_auth.token
 
 
 @app.route('/auth', methods=['POST'])
 def auth():
     username = request.authorization["username"]
     password = request.authorization["password"]
+    credentials_data = b64encode(f'{username}:{password}'.encode('utf-8')).decode('utf-8')
     with grpc.insecure_channel(config.GRPC_SERVER_PORT) as channel:
         stub = LeaderBoardStub(channel)
-        token = get_rpc_auth_token(stub, username, password)
-        if token:
-            rpc_token_metadata = (config.AUTH_HEADER, f'{config.TOKEN_HEADER}{token}')
-            app.rpc_token_metadata = rpc_token_metadata
-            jwt_token = create_access_token(identity=username)
-            logger.info('RPC authorization token received, JWT generated')
-            return jsonify({'jwt': jwt_token}), HTTPStatus.OK
-        else:
-            return jsonify({'error': 'invalid credentials'}), HTTPStatus.UNAUTHORIZED
+        credentials = BasicCredentials()
+        credentials.data = credentials_data
+        token_auth = stub.AuthenticateUser(credentials)
+    if token_auth.token:
+        rpc_token_metadata = (config.AUTH_HEADER, f'{config.TOKEN_HEADER}{token_auth.token}')
+        app.rpc_token_metadata = rpc_token_metadata
+        jwt_token = create_access_token(identity=username)
+        logger.info('RPC authorization token received, JWT generated')
+        return jsonify({'jwt': jwt_token}), HTTPStatus.OK
+    else:
+        return jsonify({'error': 'invalid credentials'}), HTTPStatus.UNAUTHORIZED
 
 
 def verify_scores_format(score_list: list) -> list:
