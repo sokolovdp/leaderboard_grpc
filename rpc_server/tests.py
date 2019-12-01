@@ -3,7 +3,7 @@ from datetime import datetime
 
 import config
 import utils
-import cron_job
+from rpc_server import cron_job
 
 initial_scores = [
     ('tuta', 10),

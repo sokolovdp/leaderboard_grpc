@@ -7,7 +7,7 @@ from google.rpc import code_pb2, status_pb2
 from proto import leaderboard_pb2
 from proto import leaderboard_pb2_grpc
 
-import database
+from rpc_server import database
 import config
 from utils import logger
 

@@ -19,7 +19,7 @@ from utils import logger, hash_password
 
 def initialize_database(db: Redis):
     if config.DEMO_MODE:
-        import tests
+        from rpc_server import tests
         tests.preload_test_data(db)
 
 
