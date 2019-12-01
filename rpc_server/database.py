@@ -79,9 +79,9 @@ def get_db_data(db: Redis, table_name: str, start_rank: int, last_rank: int) -> 
         withscores=True,
         score_cast_func=int
     )
-    db_data_ranked = [
+    db_data_ranked = [  # the highest rank is 0
         LeaderBoardRecord(name=name, score=score, rank=rank)
-        for (name, score), rank in zip(db_data, range(start_rank + 1, last_rank + 1, 1))
+        for (name, score), rank in zip(db_data, range(start_rank + 1, last_rank + 1, 1))  # increase rank by 1
     ]
     return db_data_ranked
 
@@ -100,20 +100,15 @@ def calculate_next_page(db: Redis, table_name: str, page: int) -> int:
     return page + 1 % max_page
 
 
-def calculate_player_page(rank: int) -> int:
-    return ((rank + config.LEADERBOARD_PAGE_SIZE - 1) // config.LEADERBOARD_PAGE_SIZE) - 1
-
-
 def get_results_from_table(db: Redis, table_name: str, request: GetLeaderBoard) -> LeaderBoardResponse:
     next_page = calculate_next_page(db, table_name, request.page)
     results_page = get_leaderboard_page(db, table_name, request.page)
     around_me_page = []
     if request.name and not player_score_in_page(request.name, results_page):
         player_rank = db.zrevrank(table_name, request.name)
-        if not player_rank:  # raise error: invalid player name
+        if player_rank is None:  # raise error: player name not in the table
             raise ValueError('name')
-        player_page = calculate_player_page(player_rank)
-        around_me_page = get_leaderboard_page(db, table_name, player_page)
+        around_me_page = get_leaderboard_page(db, table_name, player_rank // config.LEADERBOARD_PAGE_SIZE)
     leaderboard_response = LeaderBoardResponse()
     leaderboard_response.next_page = next_page
     leaderboard_response.results.extend(results_page)
