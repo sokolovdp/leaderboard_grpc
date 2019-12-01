@@ -1,0 +1,41 @@
+version: '3.5'
+
+services:
+  redis:
+    container_name: redis
+    restart: always
+#    environment:
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_PASSWORD=postgres
+    image: redis
+  grpc_server:
+    container_name: grpc_server
+    restart: always
+#    environment:
+#      - SANIC_DATABASE_URL=postgresql://postgres:postgres@db/postgres
+#      - SANIC_PORT=8000
+    build: ./rpc_server
+#    command: >
+#      bash -c "python3 init_db.py && python3 tests.py && python3 forum.py"
+    volumes:
+      - .:/rpc_server
+    ports:
+      - 8000:8000
+    depends_on:
+      - redis
+  grpc_client:
+    container_name: grpc_client
+    restart: always
+#    environment:
+#      - SANIC_DATABASE_URL=postgresql://postgres:postgres@db/postgres
+#      - SANIC_PORT=8000
+    build: ./rpc_client
+#    command: >
+#      bash -c "python3 init_db.py && python3 tests.py && python3 forum.py"
+    volumes:
+      - .:/rpc_client
+    ports:
+      - 5000:5000
+    depends_on:
+      - redis
+      - grpc_server
