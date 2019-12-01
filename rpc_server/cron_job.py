@@ -2,8 +2,8 @@ from datetime import datetime
 
 import redis
 
-import config
-from utils import logger
+from common import config
+from common.utils import logger
 
 
 def update_monthly_table(db):

@@ -1,8 +1,7 @@
 from redis import Redis
 from datetime import datetime
 
-import config
-import utils
+from common import config, utils
 from rpc_server import cron_job
 
 initial_scores = [

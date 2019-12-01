@@ -13,8 +13,8 @@ from proto.leaderboard_pb2 import (
     LeaderBoardResponse,
 )
 
-import config
-from utils import logger, hash_password
+from common import config
+from common.utils import logger, hash_password
 
 
 def initialize_database(db: Redis):
