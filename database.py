@@ -1,7 +1,6 @@
 from base64 import b64decode
 from datetime import datetime
 
-import redis
 from redis import Redis
 
 from proto.leaderboard_pb2 import (
@@ -25,7 +24,7 @@ def initialize_database(db: Redis):
 
 
 def db_connection() -> Redis:
-    db = redis.StrictRedis(host=config.REDIS_HOST, port=6379, charset="utf-8", decode_responses=True)
+    db = Redis(host=config.REDIS_HOST, port=6379, charset="utf-8", decode_responses=True)
     initialize_database(db)
     return db
 
@@ -101,11 +100,11 @@ def calculate_next_page(db: Redis, table_name: str, page: int) -> int:
     return page + 1 % max_page
 
 
-def calculate_player_page(rank):
+def calculate_player_page(rank: int) -> int:
     return ((rank + config.LEADERBOARD_PAGE_SIZE - 1) // config.LEADERBOARD_PAGE_SIZE) - 1
 
 
-def get_results(db: Redis, table_name: str, request: GetLeaderBoard) -> LeaderBoardResponse:
+def get_results_from_table(db: Redis, table_name: str, request: GetLeaderBoard) -> LeaderBoardResponse:
     next_page = calculate_next_page(db, table_name, request.page)
     results_page = get_leaderboard_page(db, table_name, request.page)
     around_me_page = []
@@ -122,8 +121,8 @@ def get_results(db: Redis, table_name: str, request: GetLeaderBoard) -> LeaderBo
     return leaderboard_response
 
 
-def get_leaderboard_data(db: Redis, request: GetLeaderBoard) -> tuple:
+def get_leaderboard_data(db: Redis, request: GetLeaderBoard) -> LeaderBoardResponse:
     if request.option == GetLeaderBoard.ALL_TIME:
-        return get_results(db, config.LEADERBOARD_ALL_TIMES, request)
+        return get_results_from_table(db, config.LEADERBOARD_ALL_TIMES, request)
     else:
-        return get_results(db, config.LEADERBOARD_LAST_30_DAYS, request)
+        return get_results_from_table(db, config.LEADERBOARD_LAST_30_DAYS, request)
