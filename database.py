@@ -94,23 +94,26 @@ def get_leaderboard_page(db: Redis, table_name: str, page: int) -> list:
     return leaderboard_data
 
 
-def next_page_calculate(db: Redis, table_name: str, page: int) -> int:
+def calculate_next_page(db: Redis, table_name: str, page: int) -> int:
     max_page = (db.zcard(table_name) + config.LEADERBOARD_PAGE_SIZE - 1) // config.LEADERBOARD_PAGE_SIZE
-    if page >= max_page:
+    if page >= max_page:  # raise error: invalid page value
         raise ValueError('page')
     return page + 1 % max_page
 
 
-def get_leaderboard_from_table(db: Redis, table_name: str, request: GetLeaderBoard) -> LeaderBoardResponse:
-    next_page = next_page_calculate(db, table_name, request.page)
+def calculate_player_page(rank):
+    return ((rank + config.LEADERBOARD_PAGE_SIZE - 1) // config.LEADERBOARD_PAGE_SIZE) - 1
+
+
+def get_results(db: Redis, table_name: str, request: GetLeaderBoard) -> LeaderBoardResponse:
+    next_page = calculate_next_page(db, table_name, request.page)
     results_page = get_leaderboard_page(db, table_name, request.page)
     around_me_page = []
-    # check if player's name was given, and his result is in resulting page, if not then find its page
     if request.name and not player_score_in_page(request.name, results_page):
         player_rank = db.zrevrank(table_name, request.name)
-        if not player_rank:
+        if not player_rank:  # raise error: invalid player name
             raise ValueError('name')
-        player_page = (player_rank + config.LEADERBOARD_PAGE_SIZE - 1) // config.LEADERBOARD_PAGE_SIZE
+        player_page = calculate_player_page(player_rank)
         around_me_page = get_leaderboard_page(db, table_name, player_page)
     leaderboard_response = LeaderBoardResponse()
     leaderboard_response.next_page = next_page
@@ -121,6 +124,6 @@ def get_leaderboard_from_table(db: Redis, table_name: str, request: GetLeaderBoa
 
 def get_leaderboard_data(db: Redis, request: GetLeaderBoard) -> tuple:
     if request.option == GetLeaderBoard.ALL_TIME:
-        return get_leaderboard_from_table(db, config.LEADERBOARD_ALL_TIMES, request)
+        return get_results(db, config.LEADERBOARD_ALL_TIMES, request)
     else:
-        return get_leaderboard_from_table(db, config.LEADERBOARD_LAST_30_DAYS, request)
+        return get_results(db, config.LEADERBOARD_LAST_30_DAYS, request)
