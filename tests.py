@@ -1,4 +1,4 @@
-import redis
+from redis import Redis
 from datetime import datetime
 
 import config
@@ -15,7 +15,7 @@ initial_scores = [
 ]
 
 
-def preload_test_data(db: redis.Redis):
+def preload_test_data(db: Redis):
     db.flushall()  # clear all data
     db.hmset(
         name=f'{config.CLIENT_PREFIX}{config.DEMO_LOGIN}',
@@ -42,4 +42,4 @@ def preload_test_data(db: redis.Redis):
 
 
 if __name__ == '__main__':
-    preload_test_data(redis.Redis(host=config.REDIS_HOST))
+    preload_test_data(Redis(host=config.REDIS_HOST))
