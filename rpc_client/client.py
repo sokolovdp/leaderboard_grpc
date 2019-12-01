@@ -139,7 +139,10 @@ def leaderboard():
             if status.code == code_pb2.INVALID_ARGUMENT and status.message == 'page':
                 error, status = 'page value exceeds max possible value', HTTPStatus.BAD_REQUEST
             elif status.code == code_pb2.INVALID_ARGUMENT and status.message == 'name':
-                error, status = 'player with such a name does not exist', HTTPStatus.BAD_REQUEST
+                if last_30_days:
+                    error, status = 'player has no new results during last 30 days', HTTPStatus.BAD_REQUEST
+                else:
+                    error, status = 'unknown player name', HTTPStatus.BAD_REQUEST
             else:
                 raise rpc_error
             return jsonify({'error': error}), status

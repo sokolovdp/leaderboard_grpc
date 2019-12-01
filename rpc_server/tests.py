@@ -9,6 +9,7 @@ initial_scores = [
     ('sava', 20),
     ('kiki', 30),
     ('chupa', 40),
+
     ('old1', 200),
     ('old2', 300),
 ]
@@ -37,7 +38,7 @@ def preload_test_data(db: Redis):
         db.zadd(config.LEADERBOARD_LAST_30_DAYS, {k: v})
         db.zadd(config.LEADERBOARD_TIMESTAMPS, {k: timestamp_30_days_ago})
 
-    cron_job.update_monthly_table(db)
+    cron_job.remove_old_records_from_monthly_table(db)
 
 
 if __name__ == '__main__':
