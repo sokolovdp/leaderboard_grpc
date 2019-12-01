@@ -12,7 +12,6 @@ import config
 from utils import logger
 
 INVALID_TOKEN = 'invalid rpc token'
-AUTH_HEADER = 'authorization'
 EXCEPTION_ARGS_ERROR = 'unexpected_value_error'
 
 
@@ -77,14 +76,14 @@ class AuthTokenValidatorInterceptor(grpc.ServerInterceptor):
         self._auth_header_value = None
 
     def set_token(self, auth_token):
-        self._auth_header_value = f'Bearer {auth_token.token}'
+        self._auth_header_value = f'{config.TOKEN_HEADER}{auth_token.token}'
 
     def intercept_service(self, continuation, handler_call_details):
         meta_data = handler_call_details.invocation_metadata
         method = handler_call_details.method.rsplit('/', 1)[-1]
         if method == LeaderBoardServicer.AuthenticateUser.__name__:
             return continuation(handler_call_details)
-        elif (AUTH_HEADER, self._auth_header_value) in meta_data:
+        elif (config.AUTH_HEADER, self._auth_header_value) in meta_data:
             return continuation(handler_call_details)
         elif method == LeaderBoardServicer.RecordPlayerScore.__name__:
             return stream_stream_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, INVALID_TOKEN)

@@ -5,7 +5,7 @@ import grpc
 from grpc_status import rpc_status
 from google.rpc import code_pb2
 
-from proto import leaderboard_pb2
+from proto.leaderboard_pb2 import BasicCredentials, PlayerScore, GetLeaderBoard
 from proto import leaderboard_pb2_grpc
 
 import config
@@ -20,8 +20,8 @@ app.config['JWT_SECRET_KEY'] = config.FLASK_JWT_SECRET_KEY
 jwt = JWTManager(app)
 
 
-def get_rpc_auth_token(stub, username, password):
-    credentials = leaderboard_pb2.BasicCredentials()
+def get_rpc_auth_token(stub, username: str, password: str):
+    credentials = BasicCredentials()
     credentials.data = b64encode(f'{username}:{password}'.encode('utf-8')).decode('utf-8')
     token_auth = stub.AuthenticateUser(credentials)
     return token_auth.token
@@ -35,7 +35,7 @@ def auth():
         stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
         token = get_rpc_auth_token(stub, username, password)
     if token:
-        rpc_token_metadata = ('authorization', f'Bearer {token}')
+        rpc_token_metadata = (config.AUTH_HEADER, f'{config.TOKEN_HEADER}{token}')
         app.rpc_token_metadata = rpc_token_metadata
         jwt_token = create_access_token(identity=username)
         logger.info('RPC authorization token received, JWT generated')
@@ -56,9 +56,9 @@ def verify_scores_format(score_list: list) -> list:
     return verified_scores
 
 
-def score_generator(scores):
+def score_generator(scores: list) -> PlayerScore:
     for score in scores:
-        yield leaderboard_pb2.PlayerScore(name=score[0], score=score[1])
+        yield PlayerScore(name=score[0], score=score[1])
 
 
 @app.route('/scores', methods=['POST', 'PUT'])
@@ -97,9 +97,9 @@ def leaderboard():  # TODO META_DATA CHECK
 
     with grpc.insecure_channel(config.GRPC_SERVER_PORT) as channel:
         stub = leaderboard_pb2_grpc.LeaderBoardStub(channel)
-        rpc_request = leaderboard_pb2.GetLeaderBoard()
+        rpc_request = GetLeaderBoard()
         if last_30_days:
-            rpc_request.option = leaderboard_pb2.GetLeaderBoard.LAST_30_DAYS
+            rpc_request.option = GetLeaderBoard.LAST_30_DAYS
         if page:
             rpc_request.page = page
         if name:

@@ -6,12 +6,12 @@ import utils
 import cron_job
 
 initial_scores = [
-    ('tuta', 1),
-    ('sava', 2),
-    ('kiki', 3),
-    ('chupa', 4,),
-    ('old1', 200,),
-    ('old2', 300,),
+    ('tuta', 10),
+    ('sava', 20),
+    ('kiki', 30),
+    ('chupa', 40),
+    ('old1', 200),
+    ('old2', 300),
 ]
 
 
