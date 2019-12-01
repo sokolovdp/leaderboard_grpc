@@ -11,6 +11,7 @@ GRPC_SERVER_PORT = os.getenv('GRPC_SERVER_PORT', '[::]:50051')
 REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
 GAME_NAME = os.getenv('GAME_NAME', 'dimas')
 CLIENT_PREFIX = 'RPCLIENT_'
+RPC_TOKEN_SIZE = 7
 PASSWORD_SALT = os.getenv('PASSWORD_HASH', 'Quick brown fox jumps over the lazy dog')
 LEADERBOARD_PAGE_SIZE = os.getenv('LEADERBOARD_PAGE_SIZE', 3)
 

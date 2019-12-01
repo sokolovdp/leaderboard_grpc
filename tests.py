@@ -21,7 +21,7 @@ def preload_test_data(db: redis.Redis):
         name=f'{config.CLIENT_PREFIX}{config.DEMO_LOGIN}',
         mapping={
             'password': utils.hash_password(config.DEMO_PASSWORD),
-            'token': utils.hash_password(config.DEMO_LOGIN + config.DEMO_PASSWORD)[:5],  # make it small
+            'token': utils.hash_password(config.DEMO_LOGIN + config.DEMO_PASSWORD)[:config.RPC_TOKEN_SIZE],
         }
     )
     for k, v in initial_scores[:4]:
