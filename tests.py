@@ -32,7 +32,7 @@ def preload_test_data(db: redis.Redis):
 
     today = datetime.now()
     today_timestamp = datetime.timestamp(datetime(year=today.year, month=today.month, day=today.day))
-    timestamp_30_days_ago = today_timestamp - 2_592_000  # 60 * 60 * 24 * 30 secs ago
+    timestamp_30_days_ago = today_timestamp - 2_592_000  # secs or 30 days ago
     for k, v in initial_scores[4:]:
         db.zadd(config.LEADERBOARD_ALL_TIMES, {k: v})
         db.zadd(config.LEADERBOARD_LAST_30_DAYS, {k: v})
