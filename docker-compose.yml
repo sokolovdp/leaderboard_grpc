@@ -23,8 +23,6 @@ services:
 
   client:
     restart: always
-    environment:
-      - GRPC_SERVER_HOST=server
     build:
       context: .
       dockerfile: client-dockerfile
