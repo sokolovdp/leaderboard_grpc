@@ -13,7 +13,7 @@ RPC_TOKEN_SIZE = 7
 
 PASSWORD_SALT = os.getenv('PASSWORD_HASH', 'Quick brown fox jumps over the lazy dog')
 LEADERBOARD_PAGE_SIZE = os.getenv('LEADERBOARD_PAGE_SIZE', 3)
-REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
+REDIS_HOST = os.getenv('REDIS_HOST', '0.0.0.0')
 CLIENT_PREFIX = 'RPCLIENT_'
 
 LEADERBOARD_GAME_NAME = os.getenv('GAME_NAME', 'dimas')
@@ -26,5 +26,5 @@ DEMO_PASSWORD = os.getenv('DEMO_PASSWORD', 'zz_top')
 DEMO_MODE = os.getenv('DEMO_MODE', True)
 
 FLASK_JWT_SECRET_KEY = os.getenv('FLASK_JWT_SECRET_KEY', 'flask_jwt_secret_key')
-FLASK_HOST = os.getenv('FLASK_HOST', 'localhost')
+FLASK_HOST = os.getenv('FLASK_HOST', '0.0.0.0')
 FLASK_PORT = os.getenv('FLASK_PORT', 5000)
