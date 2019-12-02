@@ -39,7 +39,7 @@ def internal_server_error(error):
     """
     A general Flask app errors handler
     """
-    logger.error('flask internal error: %s' % str(error))
+    logger.error('flask application error: %s' % str(error))
     return jsonify({'error': str(error)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 
