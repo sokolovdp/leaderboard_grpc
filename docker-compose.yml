@@ -18,7 +18,7 @@ services:
       - REDIS_HOST=0.0.0.0
     build: ./rpc_server
 #    command: >
-#      bash -c "python3 init_db.py && python3 tests.py && python3 forum.py"
+#      bash -c cron_script.sh
     volumes:
       - .:/rpc_server
     networks:
@@ -33,6 +33,17 @@ services:
       - GRPC_SERVER_PORT=[::]:50051
       - FLASK_PORT=5000
     build: ./rpc_client
+#    command: >
+#      uwsgi
+#      --module client:app
+#      --master
+#      --processes=5
+#      --threads=4
+#      --buffer-size=32768
+#      --http=0.0.0.0:5000
+#      --vacuum
+#      --die-on-term
+#      --lazy-apps
     volumes:
       - .:/rpc_client
     ports:
