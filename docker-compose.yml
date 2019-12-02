@@ -5,9 +5,10 @@ networks:
 
 services:
   redis:
-    container_name: grpc_redis
-    restart: always
     image: redis
+    container_name: redis
+    hostname: redis
+    restart: always
     networks:
       - ip6
 
@@ -15,17 +16,19 @@ services:
     container_name: grpc_server
     restart: always
     environment:
-      - LEADERBOARD_PAGE_SIZE=3
-      - GRPC_SERVER_PORT=[::]:50051
-      - GRPC_SERVER_WORKERS=3
-      - REDIS_HOST=0.0.0.0
+      - REDIS_HOST=redis
+#      - LEADERBOARD_PAGE_SIZE=3
+#      - GRPC_SERVER_PORT=[::]:50051
+#      - GRPC_SERVER_WORKERS=3
 #    command: >
 #      bash cron_script.sh
-    volumes:
-      - .:/rpc_server
+#    volumes:
+#      - .:/rpc_server
     build:
-      context: ./rpc_server
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: server-dockerfile
+    command: >
+      bash -c "python3 -m ./rpc_server/server.py"
     networks:
       - ip6
     depends_on:
@@ -34,14 +37,17 @@ services:
   grpc_client:
     container_name: grpc_client
     restart: always
-    environment:
-      - GRPC_SERVER_PORT=[::]:50051
-      - FLASK_PORT=5000
-    volumes:
-      - .:/rpc_client
+#    environment:
+#      - GRPC_SERVER_PORT=[::]:50051
+#      - FLASK_PORT=5000
+#    volumes:
+#      - .:/rpc_client
     build:
-      context: ./rpc_client
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: client-dockerfile
+    command: >
+      bash -c "python3 -m ./rpc_client/client.py"
+
 #    command: >
 #      uwsgi
 #      --module client:app
