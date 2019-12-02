@@ -4,7 +4,7 @@ import grpc
 from grpc_status import rpc_status
 from google.rpc import code_pb2, status_pb2
 
-from proto import leaderboard_pb2
+from proto.leaderboard_pb2 import TokenAuth, ScoreResponse, LeaderBoardResponse
 from proto import leaderboard_pb2_grpc
 
 from rpc_server import database
@@ -31,9 +31,15 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
         self.token_validator = None
 
     def AuthenticateUser(self, request, context):
-        auth_token = database.get_token(self.db_connection, request)
-        if auth_token.token:  # if it's valid store value in validator
-            self.token_validator.set_token(auth_token)
+        try:
+            auth_token = database.get_token(self.db_connection, request)
+            if auth_token.token:  # if it's valid store value in validator
+                self.token_validator.set_token(auth_token)
+        except Exception as error:
+            auth_token = TokenAuth()
+            err_status = create_internal_error_status(str(error))
+            context.abort_with_status(rpc_status.to_status(err_status))
+
         return auth_token
 
     def RecordPlayerScore(self, request_iterator, context):
@@ -41,14 +47,16 @@ class LeaderBoardServicer(leaderboard_pb2_grpc.LeaderBoardServicer):
             for player_score in request_iterator:
                 yield database.save_player_score(self.db_connection, player_score)
         except Exception as error:
+            player_score = ScoreResponse()
             err_status = create_internal_error_status(str(error))
             context.abort_with_status(rpc_status.to_status(err_status))
+            return player_score
 
     def GetLeaderBoardPages(self, request, context):
         try:
             leaderboard_response = database.get_leaderboard_data(self.db_connection, request)
         except ValueError as error:
-            leaderboard_response = leaderboard_pb2.LeaderBoardResponse()
+            leaderboard_response = LeaderBoardResponse()
             argument_name = error.args[0] if error.args else EXCEPTION_ARGS_ERROR
             err_status = create_invalid_argument_status(argument_name)
             context.abort_with_status(rpc_status.to_status(err_status))
