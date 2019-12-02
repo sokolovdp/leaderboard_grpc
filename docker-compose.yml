@@ -12,8 +12,7 @@ services:
     networks:
       - ip6
 
-  grpc_server:
-    container_name: server
+  server:
     restart: always
     environment:
       - REDIS_HOST=redis
@@ -28,14 +27,13 @@ services:
       context: .
       dockerfile: server-dockerfile
     command: >
-      bash -c "python3 -m server.py"
+      bash -c "python3 server.py"
     networks:
       - ip6
     depends_on:
       - redis
 
-  grpc_client:
-    container_name: client
+  client:
     restart: always
 #    environment:
 #      - GRPC_SERVER_PORT=[::]:50051
@@ -46,7 +44,7 @@ services:
       context: .
       dockerfile: client-dockerfile
     command: >
-      bash -c "python3 -m client.py"
+      bash -c "python3 client.py"
 
 #    command: >
 #      uwsgi
@@ -65,4 +63,4 @@ services:
       - ip6
     depends_on:
       - redis
-      - grpc_server
+      - server

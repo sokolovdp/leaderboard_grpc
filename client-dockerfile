@@ -1,10 +1,6 @@
 FROM python:3.7.4
 ENV PYTHONUNBUFFERED 1
-RUN mkdir /proto
-RUN mkdir /common
 WORKDIR .
-COPY proto/ ./proto
-COPY common/ ./common
 COPY . .
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r ./client_requirements.txt

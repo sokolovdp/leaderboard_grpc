@@ -4,12 +4,12 @@ import grpc
 from grpc_status import rpc_status
 from google.rpc import code_pb2, status_pb2
 
-from proto.leaderboard_pb2 import TokenAuth, ScoreResponse, LeaderBoardResponse
-from proto import leaderboard_pb2_grpc
+from leaderboard_pb2 import TokenAuth, ScoreResponse, LeaderBoardResponse
+import leaderboard_pb2_grpc
 
 import database
-from common import config
-from common.utils import logger
+import config
+from utils import logger
 
 INVALID_TOKEN_ERROR = 'invalid rpc token'
 EXCEPTION_ARGS_ERROR = 'unexpected_value_error'

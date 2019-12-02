@@ -3,7 +3,7 @@ from datetime import datetime
 
 from redis import Redis
 
-from proto.leaderboard_pb2 import (
+from leaderboard_pb2 import (
     BasicCredentials,
     TokenAuth,
     PlayerScore,
@@ -13,8 +13,8 @@ from proto.leaderboard_pb2 import (
     LeaderBoardResponse,
 )
 
-from common import config
-from common.utils import logger, hash_password
+import config
+from utils import logger, hash_password
 
 
 def initialize_database(db: Redis):

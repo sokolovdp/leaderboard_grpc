@@ -2,8 +2,8 @@ from datetime import datetime
 
 import redis
 
-from common import config
-from common.utils import logger
+import config
+from utils import logger
 
 
 def remove_old_records_from_monthly_table(db):

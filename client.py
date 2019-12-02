@@ -6,11 +6,11 @@ import grpc
 from grpc_status import rpc_status
 from google.rpc import code_pb2
 
-from proto.leaderboard_pb2 import BasicCredentials, PlayerScore, GetLeaderBoard
-from proto.leaderboard_pb2_grpc import LeaderBoardStub
+from leaderboard_pb2 import BasicCredentials, PlayerScore, GetLeaderBoard
+from leaderboard_pb2_grpc import LeaderBoardStub
 
-from common import config
-from common.utils import logger
+import config
+from utils import logger
 
 from flask import Flask, request, jsonify
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, exceptions  # get_jwt_identity

@@ -1,4 +1,4 @@
-from common import config
+import config
 import hashlib
 import logging
 

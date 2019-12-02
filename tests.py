@@ -1,7 +1,8 @@
 from redis import Redis
 from datetime import datetime
 
-from common import config, utils
+import config
+import utils
 import cron_job
 
 initial_scores = [
