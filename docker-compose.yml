@@ -1,5 +1,8 @@
 version: '3.5'
 
+networks:
+  ip6:
+
 services:
   redis:
     container_name: grpc_redis
@@ -16,11 +19,13 @@ services:
       - GRPC_SERVER_PORT=[::]:50051
       - GRPC_SERVER_WORKERS=3
       - REDIS_HOST=0.0.0.0
-    build: ./rpc_server
 #    command: >
-#      bash -c cron_script.sh
+#      bash cron_script.sh
     volumes:
       - .:/rpc_server
+    build:
+      context: ./rpc_server
+      dockerfile: Dockerfile
     networks:
       - ip6
     depends_on:
@@ -32,7 +37,11 @@ services:
     environment:
       - GRPC_SERVER_PORT=[::]:50051
       - FLASK_PORT=5000
-    build: ./rpc_client
+    volumes:
+      - .:/rpc_client
+    build:
+      context: ./rpc_client
+      dockerfile: Dockerfile
 #    command: >
 #      uwsgi
 #      --module client:app
@@ -44,8 +53,6 @@ services:
 #      --vacuum
 #      --die-on-term
 #      --lazy-apps
-    volumes:
-      - .:/rpc_client
     ports:
       - 5000:5000
     networks:
