@@ -1,7 +1,4 @@
 version: '3.5'
-#
-#networks:
-#  ip6
 
 services:
   redis:
@@ -9,8 +6,6 @@ services:
     container_name: redis
     hostname: redis
     restart: always
-#    networks:
-#      - ip6
 
   server:
     restart: always
@@ -25,24 +20,22 @@ services:
       dockerfile: server-dockerfile
     command: >
       bash -c "python3 server.py"
-#    networks:
-#      - ip6
     depends_on:
       - redis
 
   client:
     restart: always
-    environment:
-      - GRPC_SERVER_HOST=server
+#    environment:
+#      - GRPC_SERVER_HOST=server
     build:
       context: .
       dockerfile: client-dockerfile
     command: >
       bash -c "python3 client.py"
+    links:
+      - server
     ports:
       - 5000:5000
-#    networks:
-#      - ip6
     depends_on:
       - redis
       - server
