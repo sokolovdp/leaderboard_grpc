@@ -6,4 +6,4 @@ WORKDIR .
 COPY proto/ ./proto
 COPY common/ ./common
 COPY . .
-RUN pip install -r ./client_requirements.txt
+RUN pip install --no-cache-dir -r ./client_requirements.txt
