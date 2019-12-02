@@ -52,14 +52,12 @@ def store_score_in_table(db: Redis, table_name: str, request: PlayerScore) -> in
 def save_player_score(db: Redis, request: PlayerScore) -> ScoreResponse:
     timestamp = datetime.timestamp(datetime.now())
     with db.pipeline(transaction=True) as transaction:
-        try:
-            current_score = store_score_in_table(db, config.LEADERBOARD_ALL_TIMES, request)
-            _ = store_score_in_table(db, config.LEADERBOARD_LAST_30_DAYS, request)
-            rank = db.zrevrank(config.LEADERBOARD_ALL_TIMES, request.name) + 1
-            db.zadd(config.LEADERBOARD_TIMESTAMPS, {request.name: timestamp})
-            transaction.execute()
-        except Exception as e:
-            raise e
+        current_score = store_score_in_table(db, config.LEADERBOARD_ALL_TIMES, request)
+        _ = store_score_in_table(db, config.LEADERBOARD_LAST_30_DAYS, request)
+        rank = db.zrevrank(config.LEADERBOARD_ALL_TIMES, request.name) + 1
+        db.zadd(config.LEADERBOARD_TIMESTAMPS, {request.name: timestamp})
+        transaction.execute()
+
     logger.info('player: %s old: %s new: %s' % (request.name, current_score, request.score))
     return ScoreResponse(name=request.name, rank=rank)
 
