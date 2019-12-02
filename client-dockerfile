@@ -6,4 +6,5 @@ WORKDIR .
 COPY proto/ ./proto
 COPY common/ ./common
 COPY . .
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r ./client_requirements.txt

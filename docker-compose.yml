@@ -13,7 +13,7 @@ services:
       - ip6
 
   grpc_server:
-    container_name: grpc_server
+    container_name: server
     restart: always
     environment:
       - REDIS_HOST=redis
@@ -35,7 +35,7 @@ services:
       - redis
 
   grpc_client:
-    container_name: grpc_client
+    container_name: client
     restart: always
 #    environment:
 #      - GRPC_SERVER_PORT=[::]:50051
