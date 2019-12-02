@@ -1,10 +1,9 @@
 FROM python:3.7.4
 ENV PYTHONUNBUFFERED 1
-RUN mkdir /rpc_client
 RUN mkdir /proto
 RUN mkdir /common
 WORKDIR .
-COPY rpc_client/ ./rpc_client
 COPY proto/ ./proto
 COPY common/ ./common
-RUN pip install -r ./rpc_client/requirements.txt
+COPY . .
+RUN pip install -r ./client_requirements.txt

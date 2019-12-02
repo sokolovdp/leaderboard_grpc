@@ -7,7 +7,7 @@ from google.rpc import code_pb2, status_pb2
 from proto.leaderboard_pb2 import TokenAuth, ScoreResponse, LeaderBoardResponse
 from proto import leaderboard_pb2_grpc
 
-from rpc_server import database
+import database
 from common import config
 from common.utils import logger
 

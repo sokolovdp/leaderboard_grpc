@@ -2,7 +2,7 @@ from redis import Redis
 from datetime import datetime
 
 from common import config, utils
-from rpc_server import cron_job
+import cron_job
 
 initial_scores = [
     ('tuta', 10),

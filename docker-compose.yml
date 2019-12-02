@@ -28,7 +28,7 @@ services:
       context: .
       dockerfile: server-dockerfile
     command: >
-      bash -c "python3 -m ./rpc_server/server.py"
+      bash -c "python3 -m server.py"
     networks:
       - ip6
     depends_on:
@@ -46,7 +46,7 @@ services:
       context: .
       dockerfile: client-dockerfile
     command: >
-      bash -c "python3 -m ./rpc_client/client.py"
+      bash -c "python3 -m client.py"
 
 #    command: >
 #      uwsgi
