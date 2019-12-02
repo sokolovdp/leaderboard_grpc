@@ -6,7 +6,8 @@ LOGGING_FORMAT = "%(asctime)s,%(msecs)d %(levelname)s: %(message)s"
 LOGGING_DATE_FORMAT = "%H:%M:%S"
 
 GRPC_SERVER_WORKERS = os.getenv('GRPC_SERVER_WORKERS', 2)
-GRPC_SERVER_PORT = os.getenv('GRPC_SERVER_PORT', '0.0.0.0:50051')
+GRPC_SERVER_PORT = os.getenv('GRPC_SERVER_PORT', '[::]:50051')
+GRPC_SERVER_HOST = os.getenv('GRPC_SERVER_HOST', GRPC_SERVER_PORT)
 AUTH_HEADER = 'authorization'
 TOKEN_HEADER = 'Bearer '
 RPC_TOKEN_SIZE = 7

@@ -61,7 +61,7 @@ def auth():
     username = request.authorization["username"]
     password = request.authorization["password"]
     credentials_data = b64encode(f'{username}:{password}'.encode('utf-8')).decode('utf-8')
-    with grpc.insecure_channel(config.GRPC_SERVER_PORT) as channel:
+    with grpc.insecure_channel(config.GRPC_SERVER_HOST) as channel:
         stub = LeaderBoardStub(channel)
         credentials = BasicCredentials()
         credentials.data = credentials_data
@@ -103,7 +103,7 @@ def set_scores():
         return jsonify({'error': 'invalid scores format'}), HTTPStatus.BAD_REQUEST
 
     score_iterator = score_generator(verified_scores)
-    with grpc.insecure_channel(config.GRPC_SERVER_PORT) as channel:
+    with grpc.insecure_channel(config.GRPC_SERVER_HOST) as channel:
         stub = LeaderBoardStub(channel)
         player_ranks = stub.RecordPlayerScore(score_iterator, metadata=[app.rpc_token_metadata])
         ranks = [(p.name, p.rank) for p in player_ranks]
@@ -121,7 +121,7 @@ def leaderboard():
     except ValueError:
         return jsonify({'error': 'page value must be int'}), HTTPStatus.BAD_REQUEST
 
-    with grpc.insecure_channel(config.GRPC_SERVER_PORT) as channel:
+    with grpc.insecure_channel(config.GRPC_SERVER_HOST) as channel:
         stub = LeaderBoardStub(channel)
         rpc_request = GetLeaderBoard()
         if last_30_days:
@@ -155,4 +155,5 @@ def leaderboard():
 
 
 if __name__ == '__main__':
+    logger.info('GRPC server address: %s', config.GRPC_SERVER_HOST)
     app.run(host=config.FLASK_HOST, port=config.FLASK_PORT, debug=config.DEMO_MODE)

@@ -16,7 +16,6 @@ services:
     restart: always
     environment:
       - REDIS_HOST=redis
-      - LEADERBOARD_PAGE_SIZE=3
 #    command: >
 #      bash cron_script.sh
     volumes:
@@ -33,8 +32,8 @@ services:
 
   client:
     restart: always
-#    environment:
-#      - GRPC_SERVER_PORT="0.0.0.0:50051"
+    environment:
+      - GRPC_SERVER_HOST=server
     build:
       context: .
       dockerfile: client-dockerfile
