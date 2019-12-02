@@ -4,4 +4,3 @@ WORKDIR .
 COPY . .
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r ./server_requirements.txt
-EXPOSE 50051

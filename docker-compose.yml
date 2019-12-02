@@ -35,6 +35,8 @@ services:
       dockerfile: client-dockerfile
     command: >
       bash -c "python3 client.py"
+    environment:
+      - GRPC_SERVER_HOST=server:50051    # must be the name of the container and port !
     ports:
       - "5000:5000"
     depends_on:
