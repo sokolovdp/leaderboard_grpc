@@ -20,8 +20,6 @@ services:
       dockerfile: server-dockerfile
     command: >
       bash -c "python3 server.py"
-    ports:
-      - "50051:50051"
     depends_on:
       - redis
     networks:
@@ -36,9 +34,9 @@ services:
     command: >
       bash -c "python3 client.py"
     environment:
-      - GRPC_SERVER_HOST=server:50051    # must be the name of the container and port !
+      - GRPC_SERVER_HOST=server:50051    # must be the name of the container + port !
     ports:
-      - "5000:5000"
+      - 5000:5000
     depends_on:
       - redis
       - server
