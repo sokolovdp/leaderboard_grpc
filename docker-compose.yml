@@ -1,10 +1,8 @@
-version: '3.5'
+version: '3'
 
 services:
   redis:
     image: redis
-    container_name: redis
-    hostname: redis
     restart: always
 
   server:
@@ -13,29 +11,27 @@ services:
       - REDIS_HOST=redis
 #    command: >
 #      bash cron_script.sh
-    volumes:
-      - .:/rpc_server
     build:
       context: .
       dockerfile: server-dockerfile
     command: >
       bash -c "python3 server.py"
+    ports:
+      - "50051:50051"
     depends_on:
       - redis
 
   client:
     restart: always
-#    environment:
-#      - GRPC_SERVER_HOST=server
+    environment:
+      - GRPC_SERVER_HOST=server
     build:
       context: .
       dockerfile: client-dockerfile
     command: >
       bash -c "python3 client.py"
-    links:
-      - server
     ports:
-      - 5000:5000
+      - "5000:5000"
     depends_on:
       - redis
       - server
