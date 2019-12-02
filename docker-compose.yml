@@ -2,10 +2,14 @@ version: '3'
 
 services:
   redis:
+    container_name: redis
     image: redis
     restart: always
+    networks:
+      - lan
 
   server:
+    container_name: server
     restart: always
     environment:
       - REDIS_HOST=redis
@@ -20,8 +24,11 @@ services:
       - "50051:50051"
     depends_on:
       - redis
+    networks:
+      - lan
 
   client:
+    container_name: client
     restart: always
     build:
       context: .
@@ -33,3 +40,8 @@ services:
     depends_on:
       - redis
       - server
+    networks:
+      - lan
+
+networks:
+  lan:
