@@ -14,5 +14,3 @@ COPY cron-task /etc/cron.d/cron-task
 RUN chmod 0644 /etc/cron.d/cron-task
 RUN crontab /etc/cron.d/cron-task
 RUN touch /var/log/cron.log
-
-CMD cron && tail -f /var/log/cron.log
