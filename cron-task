@@ -1,2 +1,1 @@
-* * * * * echo "Hello world" >> /var/log/cron.log 2>&1
-
+0 3 * * * python3 /server/cron_job.py >> /var/log/cron.log 2>&1
