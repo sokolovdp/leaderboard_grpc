@@ -23,7 +23,7 @@ def remove_old_records_from_monthly_table(db):
 
 if __name__ == '__main__':
     db = Redis(host=config.REDIS_HOST, port=6379, charset="utf-8", decode_responses=True)
-    logger.error('cron job update_monthly_table started')
+    logger.info('cron job update_monthly_table started')
     remove_old_records_from_monthly_table(db)
-    logger.error('cron job update_monthly_table finished')
+    logger.info('cron job update_monthly_table finished')
 
