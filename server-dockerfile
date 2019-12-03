@@ -1,6 +1,18 @@
 FROM python:3.7.4
 ENV PYTHONUNBUFFERED 1
-WORKDIR .
-COPY . .
+RUN mkdir /server
+COPY . /server
+WORKDIR /server
+USER root
+
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r ./server_requirements.txt
+
+# Create cron task to clean monthly leaderboard
+RUN apt-get update && apt-get -y install cron
+COPY cron-task /etc/cron.d/cron-task
+RUN chmod 0644 /etc/cron.d/cron-task
+RUN crontab /etc/cron.d/cron-task
+RUN touch /var/log/cron.log
+
+CMD cron && tail -f /var/log/cron.log

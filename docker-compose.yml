@@ -13,8 +13,6 @@ services:
     restart: always
     environment:
       - REDIS_HOST=redis
-#    command: >
-#      bash cron_script.sh
     build:
       context: .
       dockerfile: server-dockerfile
