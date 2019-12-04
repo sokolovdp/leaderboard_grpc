@@ -40,11 +40,11 @@ if Basic auth credentials are valid, returns JWT value
 ```text
  GET /leaderboard?name=<player_name>&page=<int>&last_30_days=<0 or 1>
 ```
-send data in JSON format
+send leaderboard data in JSON format
 ```text
  POST /scores
 ```
-receives list of player'sscores in JSON format
+receives list of player's scores in JSON format
 
 ##  Implementation notes
  - Redis Z-set provides ranking functionality, so no ranking calculations implemented within the server code
