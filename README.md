@@ -51,22 +51,7 @@ receives list of player's scores in JSON format
  - It is recommended to use Self-Balanced Order-Statistic Tree (SBOST), with a hash table to implement the same functionality for SQL database (like Postgres, or Oracle), see the [link](https://www.hindawi.com/journals/ijcgt/2018/3234873/)
  - Scheduled cron job (python3 /server/cron_job.py) is used to remove scores older than 30 days from the corresponding set.
 
-
-## Testing
-No unit tests implemented, but for testing purpose during initialization database preloaded with the following player's scores:
-```python
-initial_scores = [
-    ('tuta', 10),
-    ('sava', 20),
-    ('kiki', 30),
-    ('chupa', 40),
-    ('old1', 200),   # <- time stamps older than 30 days ago
-    ('old2', 300),
-]
-```
-Load [Postman collection](https://www.getpostman.com/collections/6ced8f0d843f04a4635c) with preconfigured data to run API tests
-
-## Run application using Docker containers
+## Run application using Docker
 There are 3 docker's containers:
 - Redis database
 - gRPC server
@@ -85,3 +70,17 @@ client    | 15:25:29,471 INFO: GRPC server address: server:50051
 client    | 15:25:29,477 INFO:  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
 
 ```
+
+## Testing
+No unit tests implemented, but for testing purpose during initialization database preloaded with the following player's scores:
+```python
+initial_scores = [
+    ('tuta', 10),
+    ('sava', 20),
+    ('kiki', 30),
+    ('chupa', 40),
+    ('old1', 200),   # <- time stamps older than 30 days ago
+    ('old2', 300),
+]
+```
+Load [Postman collection](https://www.getpostman.com/collections/6ced8f0d843f04a4635c) with preconfigured data to run API tests
