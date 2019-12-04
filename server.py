@@ -15,11 +15,11 @@ INVALID_TOKEN_ERROR = 'invalid rpc token'
 EXCEPTION_ARGS_ERROR = 'unexpected_value_error'
 
 
-def create_internal_error_status(message):
+def create_internal_error_status(message: str) -> status_pb2.Status:
     return status_pb2.Status(code=code_pb2.INTERNAL, message=message)
 
 
-def create_invalid_argument_status(argument_name):
+def create_invalid_argument_status(argument_name: str) -> status_pb2.Status:
     return status_pb2.Status(code=code_pb2.INVALID_ARGUMENT, message=argument_name)
 
 
