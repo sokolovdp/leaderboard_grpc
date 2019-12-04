@@ -54,6 +54,7 @@ receives list of player's scores in JSON format
 
 ## Testing
 No unit tests implemented, but for testing purpose during initialization database preloaded with the following player's scores:
+```python
 initial_scores = [
     ('tuta', 10),
     ('sava', 20),
@@ -62,8 +63,8 @@ initial_scores = [
     ('old1', 200),   # <- time stamps older than 30 days ago
     ('old2', 300),
 ]
-
-It's possible to load [Postman collection](https://www.getpostman.com/collections/6ced8f0d843f04a4635c) to run API tests
+```
+Load [Postman collection](https://www.getpostman.com/collections/6ced8f0d843f04a4635c) with preconfigured data to run API tests
 
 ## Run application using Docker containers
 There are 3 docker's containers:
