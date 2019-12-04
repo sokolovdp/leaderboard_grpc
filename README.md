@@ -1,4 +1,4 @@
-# Demo Leaderboard project of API based on gRPC Python framework with Rest API as a gateway.
+# Demo Leaderboard project based on gRPC Python framework with Rest API as a gateway.
 gRPC server implements a leaderboard API for games. Server communicates with gRPC client. The client communicates with the server only via ​gRPC, but it is also receive and sends player scores and ranking information via traditional Rest API.
 
 ## Functionality
