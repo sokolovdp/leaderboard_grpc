@@ -63,8 +63,8 @@ initial_scores = [
     ('old2', 300),
 ]
 
-It's possible to load Postman collection to run API tests
-[Postman collection](https://www.getpostman.com/collections/6ced8f0d843f04a4635c)
+It's possible to load [Postman collection](https://www.getpostman.com/collections/6ced8f0d843f04a4635c) to run API tests
+
 
 
 
