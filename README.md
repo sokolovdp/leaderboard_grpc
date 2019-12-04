@@ -14,20 +14,20 @@ User authentication implemented in two points:
 
 ## Leaderboards implementation
 Redis database is used to store player scores. There are 3 sorted sets (Z sets) to store player scores data:
-- timestamps - keeps player score timestamp
-- all_time_leaderboard - keeps player's scores
-- last_30_days_leaderboard - keeps player's scores which where received during last 30 days
+- **timestamps** - keeps player score timestamp
+- **all_time_leaderboard** - keeps player's scores
+- **last_30_days_leaderboard** - keeps player's scores which where received during last 30 days
 
 ## Storing player’s score
-In order to store a player's score, a stream connection is opened to the gRPC server.
+In order to store a player's score, a stream connection will be opened to the gRPC server.
 The request consists of player name and score (integer). If such player does not exist in the database, it has to be created. If a
-player with such name already exists, the score for this player is updated if the
+player with such name already exists, the score for this player will be updated if the
 score​ passed to the API​ is larger​ than the one stored in the database. The response returns player’s position within the leaderboard.
 
 ## Getting the leaderboard
 The leaderboard request consists of player’s name (optional) and page number and option to see the alltime/monthly leaderboard. Each request to the leaderboard should return one page of
 results. One page should consist of configured number of results (key 'results').
-If the name of the player is passed and the player is not in this list of results (and their result
+If the name of the player passed, and the player is not in this list of results (and their result
 is not in any of the previous pages), a list of players around the current player will be
 returned (key 'around_me'). Each object of a player has to contain their name, score and position (rank).
 Plus response has next page value (key 'next_page')
@@ -73,12 +73,11 @@ There are 3 docker's containers:
 
 To run application: download repo and run **docker-compose up** command inside leaderboard_grpc folder
 
-After succfull star-up the following messages should appear in the console:
+After successful star-up the following messages should appear in the console:
 ```text
 ...
 server    | 15:25:28,206 INFO: from monthly table removed: old1, old2
 server    | 15:25:28,242 INFO: gRPC leaderboard server started at port: 0.0.0.0:50051
-r
 ...
 client    | 15:25:29,471 INFO: GRPC server address: server:50051
 ...
