@@ -65,7 +65,12 @@ initial_scores = [
 
 It's possible to load [Postman collection](https://www.getpostman.com/collections/6ced8f0d843f04a4635c) to run API tests
 
+## Run application using Docker containers
+There are 3 docker's containers:
+- Redis database
+- gRPC server
+- gRPC client with Rest API gateway
 
-
+To run application: download repo and docker-compose up command withon the leaderboard_grpc folder
 
 
