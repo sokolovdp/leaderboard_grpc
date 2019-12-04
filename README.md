@@ -1,4 +1,4 @@
-# Demo project of API based gRPC for Python framework with Rest API based on Flask framework as a gateway.
+# Demo Leaderboard project of API based on gRPC Python framework with Rest API as a gateway.
 gRPC server implements a leaderboard API for games. gRPC client is used to test the API. The client communicates with the server only via ​gRPC, but the client is also accessible by Rest API.
 
 ## Functionality
