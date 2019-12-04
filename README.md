@@ -48,7 +48,7 @@ receives list of player's scores in JSON format
 
 ##  Implementation notes
  - Redis Z-set provides ranking functionality, so no ranking calculations implemented within the server code
- - It is recommended to use Self-Balanced Order-Statistic Tree (SBOST), with a hash table to implement the same functionality for SQL database (like Postgres, or Oracle), see [link](https://www.hindawi.com/journals/ijcgt/2018/3234873/)
+ - It is recommended to use Self-Balanced Order-Statistic Tree (SBOST), with a hash table to implement the same functionality for SQL database (like Postgres, or Oracle), see the [link](https://www.hindawi.com/journals/ijcgt/2018/3234873/)
  - Scheduled cron job (python3 /server/cron_job.py) is used to remove scores older than 30 days from the corresponding set.
 
 
