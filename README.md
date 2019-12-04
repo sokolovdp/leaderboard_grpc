@@ -71,6 +71,17 @@ There are 3 docker's containers:
 - gRPC server
 - gRPC client with Rest API gateway
 
-To run application: download repo and docker-compose up command withon the leaderboard_grpc folder
+To run application: download repo and run docker-compose up command inside leaderboard_grpc folder
 
+After succfull star-up the following messages should appear in the console:
+```text
+...
+server    | 15:25:28,206 INFO: from monthly table removed: old1, old2
+server    | 15:25:28,242 INFO: gRPC leaderboard server started at port: 0.0.0.0:50051
+r
+...
+client    | 15:25:29,471 INFO: GRPC server address: server:50051
+...
+client    | 15:25:29,477 INFO:  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
 
+```
