@@ -1,5 +1,4 @@
 # Demo project of API based gRPC for Python framework with Rest API based on Flask framework as a gateway.
-
 gRPC server implements a leaderboard API for games. gRPC client is used to test the API. The client communicates with the server only via ​gRPC, but the client is also accessible by Rest API.
 
 ## Functionality
@@ -25,38 +24,48 @@ The request consists of player name and score (integer). If such player does not
 player with such name already exists, the score for this player is updated if the
 score​ passed to the API​ is larger​ than the one stored in the database. The response returns player’s position within the leaderboard.
 
+## Getting the leaderboard
+The leaderboard request consists of player’s name (optional) and page number and option to see the alltime/monthly leaderboard. Each request to the leaderboard should return one page of
+results. One page should consist of configured number of results (key 'results').
+If the name of the player is passed and the player is not in this list of results (and their result
+is not in any of the previous pages), a list of players around the current player will be
+returned (key 'around_me'). Each object of a player has to contain their name, score and position (rank).
+Plus response has next page value (key 'next_page')
 
-
-## API's points
+## External Rest API's points
 ```text
-​ POST /categories/
+​ POST /auth
 ```
+if Basic auth credentials are valid, returns JWT value
 ```text
- GET /categories/<id>/​
+ GET /leaderboard?name=<player_name>&page=<int>&last_30_days=<0 or 1>
 ```
+send data in JSON format
+```text
+ POST /scores
+```
+receives list of player'sscores in JSON format
 
 ##  Implementation notes
-API using recursive SQL queries returns both all ancestors (parents) and all descendants (children) of an element, plus its siblings (categories with the same parent)
-
-## Unit tests
-```text
-python manage.py test
-
-```
-
-## Postman collection with API tests
-https://www.getpostman.com/collections/ea2dfb57228b08319c7c
+ - Redis Z-set provides ranking functionality, so no ranking calculations implemented within the server code
+ - It is recommended to use Self-Balanced Order-Statistic Tree (SBOST), with a hash table to implement te same functionality for SQL database, see [link](https://www.hindawi.com/journals/ijcgt/2018/3234873/)
+ - Scheduled cron job (python3 /server/cron_job.py) is used to remove scores older than 30 days from the corresponding set.
 
 
+## Testing
+No unit tests implemented, but for testing purpose during initialization database preloaded with the following player's scores:
+initial_scores = [
+    ('tuta', 10),
+    ('sava', 20),
+    ('kiki', 30),
+    ('chupa', 40),
+    ('old1', 200),   # <- time stamps older than 30 days ago
+    ('old2', 300),
+]
+
+It's possible to load Postman collection to run API tests
+[Postman collection](https://www.getpostman.com/collections/6ced8f0d843f04a4635c)
 
 
 
-
-
-
-root@99d6ecfc9c2c:/server# ps -ef | grep cron
-root         7     1  0 11:03 ?        00:00:00 cron
-root        20    14  0 11:04 pts/0    00:00:00 grep cron
-root@99d6ecfc9c2c:/server# crontab -u root -l
-0 3 * * * python3 /server/cron_job.py >> /var/log/cron.log 2>&1
 
