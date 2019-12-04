@@ -71,7 +71,7 @@ There are 3 docker's containers:
 - gRPC server
 - gRPC client with Rest API gateway
 
-To run application: download repo and run docker-compose up command inside leaderboard_grpc folder
+To run application: download repo and run **docker-compose up** command inside leaderboard_grpc folder
 
 After succfull star-up the following messages should appear in the console:
 ```text
