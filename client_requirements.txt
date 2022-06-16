@@ -1,6 +1,3 @@
 grpcio
-grpcio-tools
-grpcio-status
-googleapis-common-protos
 flask
 flask_jwt_extended

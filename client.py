@@ -3,8 +3,8 @@ from http import HTTPStatus
 from functools import wraps
 
 import grpc
-from grpc_status import rpc_status
-from google.rpc import code_pb2
+# from grpc_status import rpc_status
+# from google.rpc import code_pb2
 
 from leaderboard_pb2 import BasicCredentials, PlayerScore, GetLeaderBoard
 from leaderboard_pb2_grpc import LeaderBoardStub
@@ -13,7 +13,7 @@ import config
 from utils import logger
 
 from flask import Flask, request, jsonify
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token, exceptions  # get_jwt_identity
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, exceptions
 
 app = Flask(__name__)
 app.rpc_token_metadata = None
@@ -27,11 +27,10 @@ def grpc_server_error(rpc_error):
     A gRPC errors handler
     """
     app.rpc_token_metadata = None  # clear meta_data
-    logger.error('gRPC error: %s' % str(rpc_error))
+    logger.error(f'gRPC error: {str(rpc_error)}')
     err_name = rpc_error._state.code.name
     err_code = rpc_error._state.code.value[0]
-    extended_status = rpc_status.from_call(rpc_error)
-    return jsonify({'grpc_error': f'{err_name} {err_code} {extended_status}'}), HTTPStatus.CONFLICT
+    return jsonify({'grpc_error': f'{err_name} {err_code}'}), HTTPStatus.CONFLICT
 
 
 @app.errorhandler(Exception)
@@ -39,7 +38,7 @@ def internal_server_error(error):
     """
     A general Flask app errors handler
     """
-    logger.error('flask application error: %s' % str(error))
+    logger.error(f'flask application error: {str(error)}')
     return jsonify({'error': str(error)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 
@@ -135,7 +134,7 @@ def leaderboard():
             results = [(r.name, r.score, r.rank) for r in leaderboard_response.results]
             around_me = [(a.name, a.score, a.rank) for a in leaderboard_response.around_me]
         except grpc.RpcError as rpc_error:
-            status = rpc_status.from_call(rpc_error)
+            status = rpc_error.code()
             if status.code == code_pb2.INVALID_ARGUMENT and status.message == 'page':
                 error, status = 'page value exceeds max possible value', HTTPStatus.BAD_REQUEST
             elif status.code == code_pb2.INVALID_ARGUMENT and status.message == 'name':
